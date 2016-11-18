@@ -38,12 +38,12 @@ NOTE: This gem is tested agains version 2.4.
 
 ## Configuration
 
-Generate the configuration file:
+Run the install generator:
 ```
 $ bundle exec rails g indices:install
 ```
 
-Configure the global settings:
+Set the global settings:
 ```ruby
 Indices.configure do |config|
 
@@ -106,7 +106,7 @@ Generate an index:
 $ bundle exec rails g indices:index products
 ```
 
-Configure the index:
+Define the index:
 ```ruby
 Indices.define :products do
 
