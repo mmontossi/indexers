@@ -231,6 +231,11 @@ The suggestion parameters are sent to previous configured block:
 Indices.suggest :products, 'gibson'
 ```
 
+Returns array of hashes with a text property:
+```ruby
+[{ text: 'Les Paul' }, ...]
+```
+
 ## Credits
 
 This gem is maintained and funded by [mmontossi](https://github.com/mmontossi).
