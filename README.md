@@ -171,12 +171,12 @@ $ bundle exec rake indices:build
 
 The search parameters are sent to previous configured block:
 ```ruby
-@products = Product.search(name: 'Test')
+products = Product.search(name: 'Test')
 ```
 
 You can use the returned value as a collection in views:
 ```erb
-<%= render @products %>
+<%= render products %>
 ```
 
 ### Includes
@@ -202,24 +202,24 @@ Product.search(without: 4)
 
 Works the same as [Pagers gem](https://github.com/mmontossi/pagers):
 ```ruby
-@products.page 1, padding: 4, length: 30
+products.page 1, padding: 4, length: 30
 ```
 
 And you can send the collection directly to the helper in views:
 ```erb
-<%= paginate @products %>
+<%= paginate products %>
 ```
 
 ### Order
 
 Works the same as in relations:
 ```ruby
-@products.order(name: :asc)
+products.order(name: :asc)
 ```
 
 To use a computed_sort:
 ```ruby
-@products.order(price: :asc)
+products.order(price: :asc)
 ```
 
 NOTE: To sort by a string column, you must declare the mapping raw.
