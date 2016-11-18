@@ -2,7 +2,10 @@ module Indices
   class Configuration
 
     attr_accessor :hosts, :log, :trace
-    attr_reader :computed_sorts
+
+    def computed_sorts
+      @computed_sorts ||= {}
+    end
 
     def mappings(&block)
       if block_given?
@@ -28,9 +31,8 @@ module Indices
       end
     end
 
-    def computed_sort(name, &block)
-      @computed_sorts ||= {}
-      @computed_sorts[name] = block
+    def add_computed_sort(name, &block)
+      self.computed_sorts[name] = block
     end
 
   end

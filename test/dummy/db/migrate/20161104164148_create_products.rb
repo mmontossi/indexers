@@ -7,8 +7,6 @@ class CreateProducts < ActiveRecord::Migration
       t.integer :price
       t.integer :position
       t.string :currency
-
-      t.timestamps null: false
     end
   end
 end

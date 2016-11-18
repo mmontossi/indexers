@@ -54,7 +54,7 @@ Indices.configure do |config|
     end
   end
 
-  config.computed_sort :price do |direction|
+  config.add_computed_sort :price do |direction|
     _script do
       type 'number'
       script do
