@@ -14,7 +14,7 @@ I did this gem to:
 - Gain control of the queries without losing simplicity.
 - Have out of the box integration with activerecord and pagers.
 - Deal with the just in time nature of elasticsearch.
-- Integrate activerecord tool on it.
+- Integrate activerecord includes on it.
 - Have a convention of how to integrate suggestions.
 
 ## Install
