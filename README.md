@@ -15,7 +15,7 @@ I did this gem to:
 - Have out of the box integration with activerecord and pagers.
 - Deal with the just in time nature of elasticsearch.
 - Integrate activerecord includes on it.
-- Have a convention of how to integrate suggestions.
+- Have a convention of how to use suggestions.
 
 ## Install
 
@@ -31,7 +31,7 @@ $ bundle
 
 To install Redis you can use homebrew:
 ```
-brew install elasticsearch24
+$ brew install elasticsearch24
 ```
 
 NOTE: This gem is tested agains version 2.4.
@@ -40,7 +40,7 @@ NOTE: This gem is tested agains version 2.4.
 
 Generate the configuration file:
 ```
-bundle exec rails g indices:install
+$ bundle exec rails g indices:install
 ```
 
 Configure the global settings:
@@ -103,7 +103,7 @@ end
 
 Generate an index:
 ```
-bundle exec rails g indices:index products
+$ bundle exec rails g indices:index products
 ```
 
 Configure the index:
@@ -159,12 +159,12 @@ product.unindex
 
 At any time you can force a full rebuild:
 ```
-bundle exec rake indices:rebuild
+$ bundle exec rake indices:rebuild
 ```
 
 Or if you need it, just a build:
 ```
-bundle exec rake indices:build
+$ bundle exec rake indices:build
 ```
 
 ### Search
