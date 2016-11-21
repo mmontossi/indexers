@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.authors     = ['mmontossi']
   s.email       = ['mmontossi@gmail.com']
   s.homepage    = 'https://github.com/mmontossi/indices'
-  s.summary     = 'Indices for rails.'
+  s.summary     = 'Search indices for rails.'
   s.description = 'Model search indices with elasticsearch in rails.'
   s.license     = 'MIT'
 
