@@ -145,7 +145,7 @@ end
 
 ### Indexing
 
-Ocurrs everytime you create or destroy a record:
+Ocurrs everytime you create, update or destroy a record:
 ```ruby
 product = Product.create(name: 'Les Paul', category: 'Gibson')
 ```
@@ -162,7 +162,7 @@ At any time you can force a full rebuild:
 $ bundle exec rake indices:rebuild
 ```
 
-Or if you need it, just a build:
+Or if you need just a build:
 ```
 $ bundle exec rake indices:build
 ```
@@ -200,7 +200,7 @@ Product.search(without: 4)
 
 ### Pagination
 
-Works the same as [Pagers gem](https://github.com/mmontossi/pagers):
+Works the same as [pagers gem](https://github.com/mmontossi/pagers):
 ```ruby
 products.page 1, padding: 4, length: 30
 ```
