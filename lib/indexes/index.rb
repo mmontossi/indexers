@@ -99,7 +99,7 @@ module Indexes
     end
 
     def build
-      client.indexes.put_mapping(
+      client.indices.put_mapping(
         index: namespace,
         type: type,
         body: mappings

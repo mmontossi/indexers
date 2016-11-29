@@ -60,8 +60,8 @@ module Indexes
     end
 
     def build
-      unless client.indexes.exists?(index: namespace)
-        client.indexes.create(
+      unless client.indices.exists?(index: namespace)
+        client.indices.create(
           index: namespace,
           body: { settings: configuration.analysis }
         )
@@ -70,7 +70,7 @@ module Indexes
     end
 
     def exist?(type)
-      client.indexes.exists? index: namespace, type: type
+      client.indices.exists? index: namespace, type: type
     end
 
     def rebuild
@@ -79,8 +79,8 @@ module Indexes
     end
 
     def destroy
-      if client.indexes.exists?(index: namespace)
-        client.indexes.delete index: namespace
+      if client.indices.exists?(index: namespace)
+        client.indices.delete index: namespace
       end
     end
 
