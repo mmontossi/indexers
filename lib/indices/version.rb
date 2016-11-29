@@ -1,4 +1,4 @@
-module Indices
+module Indexes
 
   VERSION = '0.0.1'
 

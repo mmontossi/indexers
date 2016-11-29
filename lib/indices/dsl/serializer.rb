@@ -1,4 +1,4 @@
-module Indices
+module Indexes
   module Dsl
     class Serializer < Api
 

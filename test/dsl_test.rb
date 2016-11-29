@@ -86,7 +86,7 @@ class DslTest < ActiveSupport::TestCase
   private
 
   def build_request(&block)
-    Indices::Dsl::Search.new(&block).to_h
+    Indexes::Dsl::Search.new(&block).to_h
   end
 
 end

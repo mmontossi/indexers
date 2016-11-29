@@ -1,4 +1,4 @@
-Indices.define :products do
+Indexes.define :products do
 
   mappings do
     properties :name, :category, :shop_id, :price, :currency, :product_suggestions

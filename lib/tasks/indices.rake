@@ -1,11 +1,11 @@
-namespace :indices do
-  desc 'Build all indices.'
+namespace :indexes do
+  desc 'Build all indexes.'
   task build: :environment do
-    Indices.build
+    Indexes.build
   end
 
-  desc 'Rebuild all indices.'
+  desc 'Rebuild all indexes.'
   task rebuild: :environment do
-    Indices.rebuild
+    Indexes.rebuild
   end
 end

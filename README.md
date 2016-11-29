@@ -1,11 +1,11 @@
-[![Gem Version](https://badge.fury.io/rb/indices.svg)](http://badge.fury.io/rb/indices)
-[![Code Climate](https://codeclimate.com/github/mmontossi/indices/badges/gpa.svg)](https://codeclimate.com/github/mmontossi/indices)
-[![Build Status](https://travis-ci.org/mmontossi/indices.svg)](https://travis-ci.org/mmontossi/indices)
-[![Dependency Status](https://gemnasium.com/mmontossi/indices.svg)](https://gemnasium.com/mmontossi/indices)
+[![Gem Version](https://badge.fury.io/rb/indexes.svg)](http://badge.fury.io/rb/indexes)
+[![Code Climate](https://codeclimate.com/github/mmontossi/indexes/badges/gpa.svg)](https://codeclimate.com/github/mmontossi/indexes)
+[![Build Status](https://travis-ci.org/mmontossi/indexes.svg)](https://travis-ci.org/mmontossi/indexes)
+[![Dependency Status](https://gemnasium.com/mmontossi/indexes.svg)](https://gemnasium.com/mmontossi/indexes)
 
-# Indices
+# Indexes
 
-Model search indices with elasticsearch in rails.
+Model search indexes with elasticsearch in rails.
 
 ## Why
 
@@ -21,7 +21,7 @@ I did this gem to:
 
 Put this line in your Gemfile:
 ```ruby
-gem 'indices'
+gem 'indexes'
 ```
 
 Then bundle:
@@ -40,12 +40,12 @@ NOTE: This gem is tested agains version 2.4.
 
 Run the install generator:
 ```
-$ bundle exec rails g indices:install
+$ bundle exec rails g indexes:install
 ```
 
 Set the global settings:
 ```ruby
-Indices.configure do |config|
+Indexes.configure do |config|
 
   config.hosts = %w(localhost:9200)
   config.log = false
@@ -103,12 +103,12 @@ end
 
 Generate an index:
 ```
-$ bundle exec rails g indices:index products
+$ bundle exec rails g indexes:index products
 ```
 
 Define the index:
 ```ruby
-Indices.define :products do
+Indexes.define :products do
 
   mappings do
     properties :name, :category, :price, :product_suggestions
@@ -159,12 +159,12 @@ product.unindex
 
 At any time you can force a full rebuild:
 ```
-$ bundle exec rake indices:rebuild
+$ bundle exec rake indexes:rebuild
 ```
 
 Or if you need just a build:
 ```
-$ bundle exec rake indices:build
+$ bundle exec rake indexes:build
 ```
 
 ### Search
@@ -228,7 +228,7 @@ NOTE: To sort by a string column, you must declare the mapping raw.
 
 The suggestion parameters are sent to previous configured block:
 ```ruby
-Indices.suggest :products, 'gibson'
+Indexes.suggest :products, 'gibson'
 ```
 
 Returns array of hashes with a text property:

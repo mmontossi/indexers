@@ -1,4 +1,4 @@
-Indices.define :<%= table_name %> do
+Indexes.define :<%= table_name %> do
 
   mappings do
   end

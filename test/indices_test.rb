@@ -1,25 +1,25 @@
 require 'test_helper'
 
-class IndicesTest < ActiveSupport::TestCase
+class IndexesTest < ActiveSupport::TestCase
 
   setup do
-    Indices.build
+    Indexes.build
   end
 
   teardown do
-    Indices.destroy
+    Indexes.destroy
   end
 
   test 'namespace' do
-    assert_equal 'dummy_test', Indices.namespace
+    assert_equal 'dummy_test', Indexes.namespace
   end
 
   test 'find' do
-    assert Indices.find(:products)
+    assert Indexes.find(:products)
   end
 
   test 'exist' do
-    assert Indices.exist?(:products)
+    assert Indexes.exist?(:products)
   end
 
   test 'suggest' do
@@ -38,7 +38,7 @@ class IndicesTest < ActiveSupport::TestCase
   private
 
   def suggest(term, shop)
-    Indices.suggest(:products, term, shop: shop).map do |suggestion|
+    Indexes.suggest(:products, term, shop: shop).map do |suggestion|
       suggestion[:text]
     end
   end

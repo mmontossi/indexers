@@ -1,10 +1,10 @@
-module Indices
+module Indexes
   class Proxy
 
     def initialize(name, options={}, &block)
       @options = options
       instance_eval &block
-      Indices.add name, @options
+      Indexes.add name, @options
     end
 
     %i(mappings serializer search).each do |name|

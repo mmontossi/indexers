@@ -7,18 +7,18 @@ class TasksTest < ActiveSupport::TestCase
   end
 
   teardown do
-    Indices.destroy
+    Indexes.destroy
   end
 
   test 'build' do
     assert_nothing_raised do
-      Rake::Task['indices:build'].invoke
+      Rake::Task['indexes:build'].invoke
     end
   end
 
   test 'rebuild' do
     assert_nothing_raised do
-      Rake::Task['indices:rebuild'].invoke
+      Rake::Task['indexes:rebuild'].invoke
     end
   end
 

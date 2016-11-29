@@ -1,7 +1,7 @@
 development:
   adapter: postgresql
-  database: indices_development
+  database: indexes_development
 
 test:
   adapter: postgresql
-  database: indices_test
+  database: indexes_test

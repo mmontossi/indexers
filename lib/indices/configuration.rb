@@ -1,4 +1,4 @@
-module Indices
+module Indexes
   class Configuration
 
     attr_accessor :hosts, :log, :trace

@@ -1,4 +1,4 @@
-module Indices
+module Indexes
   class Index
     include Comparable
 
@@ -99,7 +99,7 @@ module Indices
     end
 
     def build
-      client.indices.put_mapping(
+      client.indexes.put_mapping(
         index: namespace,
         type: type,
         body: mappings
@@ -119,7 +119,7 @@ module Indices
 
     %i(client namespace).each do |name|
       define_method name do
-        Indices.send name
+        Indexes.send name
       end
     end
 
@@ -138,7 +138,7 @@ module Indices
     def make_indexable
       index = self
       model.class_eval do
-        include Indices::Concern
+        include Indexes::Concern
         define_singleton_method :index do
           index
         end

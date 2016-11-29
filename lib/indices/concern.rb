@@ -1,4 +1,4 @@
-module Indices
+module Indexes
   module Concern
     extend ActiveSupport::Concern
 

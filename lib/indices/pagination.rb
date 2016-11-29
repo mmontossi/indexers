@@ -1,4 +1,4 @@
-module Indices
+module Indexes
   module Pagination
 
     def total_pages

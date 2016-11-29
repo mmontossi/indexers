@@ -3,11 +3,11 @@ require 'test_helper'
 class SearchTest < ActiveSupport::TestCase
 
   setup do
-    Indices.build
+    Indexes.build
   end
 
   teardown do
-    Indices.destroy
+    Indexes.destroy
   end
 
   test 'order' do

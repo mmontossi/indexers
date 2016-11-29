@@ -1,11 +1,11 @@
-module Indices
+module Indexes
   module Dsl
     class Mappings < Api
 
       def properties(*names)
         @parent[:properties] ||= {}
         names.each do |name|
-          @parent[:properties][name] = Indices.configuration.mappings[name]
+          @parent[:properties][name] = Indexes.configuration.mappings[name]
         end
       end
 

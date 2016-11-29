@@ -3,11 +3,11 @@ require 'test_helper'
 class RecordTest < ActiveSupport::TestCase
 
   setup do
-    Indices.build
+    Indexes.build
   end
 
   teardown do
-    Indices.destroy
+    Indexes.destroy
   end
 
   test 'indexing' do

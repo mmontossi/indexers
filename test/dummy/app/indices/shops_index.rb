@@ -1,4 +1,4 @@
-Indices.define :other, class_name: 'Shop' do
+Indexes.define :other, class_name: 'Shop' do
 
   mappings do
     properties :name

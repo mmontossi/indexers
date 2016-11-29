@@ -1,14 +1,14 @@
-module Indices
+module Indexes
   class Railtie < Rails::Railtie
 
-    initializer :indices do
-      Dir[Rails.root.join('app/indices/*')].each do |index|
+    initializer :indexes do
+      Dir[Rails.root.join('app/indexes/*')].each do |index|
         load index
       end
     end
 
     rake_tasks do
-      load 'tasks/indices.rake'
+      load 'tasks/indexes.rake'
     end
 
   end

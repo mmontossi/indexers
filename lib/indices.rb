@@ -1,19 +1,19 @@
-require 'generators/indices/index_generator'
-require 'generators/indices/install_generator'
-require 'indices/dsl/api'
-require 'indices/dsl/mappings'
-require 'indices/dsl/search'
-require 'indices/dsl/serializer'
-require 'indices/concern'
-require 'indices/configuration'
-require 'indices/index'
-require 'indices/pagination'
-require 'indices/proxy'
-require 'indices/railtie'
-require 'indices/collection'
-require 'indices/version'
+require 'generators/indexes/index_generator'
+require 'generators/indexes/install_generator'
+require 'indexes/dsl/api'
+require 'indexes/dsl/mappings'
+require 'indexes/dsl/search'
+require 'indexes/dsl/serializer'
+require 'indexes/concern'
+require 'indexes/configuration'
+require 'indexes/index'
+require 'indexes/pagination'
+require 'indexes/proxy'
+require 'indexes/railtie'
+require 'indexes/collection'
+require 'indexes/version'
 
-module Indices
+module Indexes
   class << self
 
     delegate :any?, :none?, to: :registry
@@ -60,8 +60,8 @@ module Indices
     end
 
     def build
-      unless client.indices.exists?(index: namespace)
-        client.indices.create(
+      unless client.indexes.exists?(index: namespace)
+        client.indexes.create(
           index: namespace,
           body: { settings: configuration.analysis }
         )
@@ -70,7 +70,7 @@ module Indices
     end
 
     def exist?(type)
-      client.indices.exists? index: namespace, type: type
+      client.indexes.exists? index: namespace, type: type
     end
 
     def rebuild
@@ -79,8 +79,8 @@ module Indices
     end
 
     def destroy
-      if client.indices.exists?(index: namespace)
-        client.indices.delete index: namespace
+      if client.indexes.exists?(index: namespace)
+        client.indexes.delete index: namespace
       end
     end
 

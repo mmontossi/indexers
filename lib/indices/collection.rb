@@ -1,4 +1,4 @@
-module Indices
+module Indexes
   class Collection
     include Enumerable
 
@@ -44,10 +44,10 @@ module Indices
     end
 
     def order(options)
-      mappings = Indices.configuration.mappings
+      mappings = Indexes.configuration.mappings
       sort = []
       options.each do |property, direction|
-        if block = Indices.configuration.computed_sorts[property]
+        if block = Indexes.configuration.computed_sorts[property]
           sort << Dsl::Api.new(direction, &block).to_h
         elsif property == :id
           sort << { _uid: { order: direction } }

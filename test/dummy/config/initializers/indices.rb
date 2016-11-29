@@ -1,4 +1,4 @@
-Indices.configure do |config|
+Indexes.configure do |config|
 
   config.hosts = %w(localhost:9200)
   config.log = false

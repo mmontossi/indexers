@@ -1,4 +1,4 @@
-module Indices
+module Indexes
   module Dsl
     class Search < Api
 
@@ -14,7 +14,7 @@ module Indices
 
       def add_argument(name, args, options)
         if name == :query && args.first.is_a?(Symbol)
-          @parent[name] = Indices[args.first].search(options).query[:query]
+          @parent[name] = Indexes[args.first].search(options).query[:query]
         else
           super
         end
