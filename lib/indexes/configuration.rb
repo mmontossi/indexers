@@ -31,7 +31,7 @@ module Indexes
       end
     end
 
-    def add_computed_sort(name, &block)
+    def computed_sort(name, &block)
       self.computed_sorts[name] = block
     end
 

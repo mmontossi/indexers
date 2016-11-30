@@ -3,7 +3,7 @@ Indexes.define :<%= table_name %> do
   mappings do
   end
 
-  serializer do |record|
+  serialization do |record|
   end
 
   search do |*args|

@@ -4,8 +4,8 @@ Indexes.define :other, class_name: 'Shop' do
     properties :name
   end
 
-  serializer do |record|
-    set record, :name
+  serialization do |record|
+    name record.name
   end
 
   search do |*args|

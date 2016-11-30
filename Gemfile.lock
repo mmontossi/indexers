@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    indexes (0.0.1)
+    indexes (0.1.0)
       elasticsearch (~> 2.0.0)
       rails (>= 4.2.0, < 4.3.0)
 
@@ -55,7 +55,7 @@ GEM
       faraday
       multi_json
     erubis (2.7.0)
-    faraday (0.9.2)
+    faraday (0.10.0)
       multipart-post (>= 1.2, < 3)
     globalid (0.3.7)
       activesupport (>= 4.1.0)
@@ -78,7 +78,7 @@ GEM
     nokogiri (1.6.8.1)
       mini_portile2 (~> 2.1.0)
     pg (0.19.0)
-    rack (1.6.4)
+    rack (1.6.5)
     rack-test (0.6.3)
       rack (>= 1.0)
     rails (4.2.7.1)
@@ -113,7 +113,7 @@ GEM
       actionpack (>= 4.0)
       activesupport (>= 4.0)
       sprockets (>= 3.0.0)
-    thor (0.19.1)
+    thor (0.19.4)
     thread_safe (0.3.5)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)

@@ -8,7 +8,7 @@ module Indexes
       @name = name
       @type = @name.to_s.singularize
       @options = options
-      make_indexable
+      indexify_model
     end
 
     def mappings
@@ -132,10 +132,10 @@ module Indexes
     end
 
     def serialize(record)
-      Dsl::Serializer.new(record, &options[:serializer]).to_h
+      Dsl::Serialization.new(record, &options[:serialization]).to_h
     end
 
-    def make_indexable
+    def indexify_model
       index = self
       model.class_eval do
         include Indexes::Concern

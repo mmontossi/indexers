@@ -1,7 +1,7 @@
 require 'test_helper'
 require 'rails/generators'
 require 'generators/indexes/install_generator'
-require 'generators/indexes/index_generator'
+require 'generators/index_generator'
 
 class GeneratorsTest < Rails::Generators::TestCase
   destination File.expand_path('../tmp', File.dirname(__FILE__))

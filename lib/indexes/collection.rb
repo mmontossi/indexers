@@ -8,17 +8,29 @@ module Indexes
 
     alias_method :to_ary, :to_a
 
-    def initialize(index, *args, &block)
+    def initialize(index, args=[], options={}, &block)
       @loaded = false
       @index = index
-      @options = args.extract_options!
       @args = args
+      @options = options
       @block = block
     end
 
+    def with(ids)
+      chain with: ids
+    end
+
+    def without(ids)
+      chain without: ids
+    end
+
+    def includes(*args)
+      chain includes: args
+    end
+
     def page(number, options={})
-      length = (fetch_option(options, :length) || 10)
-      padding = (fetch_option(options, :padding) || 0)
+      length = page_option(options, :length, 10)
+      padding = page_option(options, :padding, 0)
       current_page = [number.to_i, 1].max
       values = Module.new do
         define_method :page_length do
@@ -31,32 +43,28 @@ module Indexes
           current_page
         end
       end
-      overrides = {
+      chain(
+        Pagination,
+        values,
         from: ((length * (current_page - 1)) + padding),
         size: length
-      }
-      %i(with without).each do |name|
-        if options.has_key?(name)
-          overrides[name] = options[name]
-        end
-      end
-      chain Pagination, values, overrides
+      )
     end
 
     def order(options)
       mappings = Indexes.configuration.mappings
-      sort = []
+      values = []
       options.each do |property, direction|
         if block = Indexes.configuration.computed_sorts[property]
-          sort << Dsl::Api.new(direction, &block).to_h
+          values << Dsl::Api.new(direction, &block).to_h
         elsif property == :id
-          sort << { _uid: { order: direction } }
+          values << { _uid: { order: direction } }
         elsif mappings.has_key?(property) && mappings[property][:type] == 'string'
-          sort << { "#{property}.raw" => { order: direction } }
+          values << { "#{property}.raw" => { order: direction } }
         end
       end
-      if sort.any?
-        chain sort: sort
+      if values.any?
+        chain sort: values
       else
         chain
       end
@@ -75,7 +83,7 @@ module Indexes
       @query ||= begin
         pagination = options.slice(:from, :size, :sort)
         without_ids = fetch_ids(options[:without])
-        body = Dsl::Search.new(args.append(options), &block).to_h[:query]
+        body = Dsl::Search.new(args, &block).to_h[:query]
         request = Dsl::Search.new do
           if without_ids.any?
             query do
@@ -97,9 +105,9 @@ module Indexes
           else
             query body
           end
-          %i(from size).each do |option|
-            if pagination.has_key?(option)
-              send option, pagination[option]
+          %i(from size).each do |name|
+            if pagination.has_key?(name)
+              send name, pagination[name]
             end
           end
           if pagination.has_key?(:sort)
@@ -122,47 +130,30 @@ module Indexes
 
     def records
       @records ||= begin
+        hit_ids = response['hits']['hits'].map{ |hit| hit['_id'].to_i }
+        missing_ids = (fetch_ids(options[:with]) - hit_ids)
         if missing_ids.any?
           last_index = -(missing_ids.length + 1)
           ids = (missing_ids.sort.reverse + hit_ids.to(last_index))
         else
           ids = hit_ids
         end
+        includes = options.fetch(:includes, [])
         index.model.includes(includes).where(id: ids).sort do |a,b|
           ids.index(a.id) <=> ids.index(b.id)
         end
       end
     end
 
-    def with_ids
-      @with_ids ||= fetch_ids(options[:with])
-    end
-
-    def hit_ids
-      @hit_ids ||= response['hits']['hits'].map{ |hit| hit['_id'].to_i }
-    end
-
-    def missing_ids
-      @missing_ids ||= (with_ids - hit_ids)
-    end
-
-    def includes
-      @inclues ||= begin
-        if options.has_key?(:includes)
-          Array options[:includes]
-        else
-          []
-        end
-      end
-    end
-
-    def fetch_option(options, name)
-      options[name] || begin
+    def page_option(source, name, default)
+      source[name] || begin
         if Rails.configuration.cache_classes == false
           Rails.application.eager_load!
         end
         if defined?(Pagers)
           Pagers.config[name]
+        else
+          default
         end
       end
     end
@@ -184,11 +175,11 @@ module Indexes
 
     def chain(*extensions)
       overrides = extensions.extract_options!
-      Collection.new(index, *args.append(options.merge(overrides)), &block).tap do |collection|
-        extensions.each do |extension|
-          collection.extend extension
-        end
+      collection = Collection.new(index, args, options.merge(overrides), &block)
+      extensions.each do |extension|
+        collection.extend extension
       end
+      collection
     end
 
   end

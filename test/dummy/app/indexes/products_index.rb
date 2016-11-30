@@ -5,8 +5,10 @@ Indexes.define :products do
     _parent type: 'shop'
   end
 
-  serializer do |record|
-    set record, :name, :category, :shop_id, :price, :currency
+  serialization do |record|
+    %i(name category shop_id price currency).each do |attribute|
+      send attribute, record.send(attribute)
+    end
     product_suggestions do
       input [record.name, transliterate(record.name)].uniq
       output record.name
