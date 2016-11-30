@@ -143,12 +143,12 @@ Indexes.define :products do
 end
 ```
 
-Then everytime you create, update or destroy a record the index will be updated:
+The index will be updated every time a record is created, updated or destroyed:
 ```ruby
 product = Product.create(name: 'Les Paul', category: 'Gibson')
 ```
 
-You can force it individually by using this methods:
+You can force this actions manually with:
 ```ruby
 product.index
 product.reindex
@@ -165,19 +165,21 @@ $ bundle exec rake indexes:rebuild
 
 ### Search
 
-Use the search method of the model:
+Use the include search method in the model:
 ```ruby
 products = Product.search(name: 'Les Paul')
-```
-
-You can include :
-```ruby
-Product.search.includes(:shop)
 ```
 
 The result can be used as a collection in views:
 ```erb
 <%= render products %>
+```
+
+### Includes
+
+Same as using activerecod:
+```ruby
+Product.search.includes(:shop)
 ```
 
 ### Pagination
@@ -200,16 +202,16 @@ And you can send the collection directly to the view helper:
 
 ### Order
 
-Same as using activerecord order:
+Same as using activerecord:
 ```ruby
 products.order(name: :asc)
 ```
 
-You can use computed sort by declare them in the configuration:
+You can use a computed order by declare it in the configuration:
 ```ruby
 Indexes.configure do |config|
 
-  config.add_computed_sort :price do |direction|
+  config.add_computed_order :price do |direction|
     _script do
       type 'number'
       script do
