@@ -45,7 +45,7 @@ Generate the configuration file:
 $ bundle exec rails g indexes:install
 ```
 
-Configure the connection, analysis, mappings and computed sorts:
+Configure the connection and mappings:
 ```ruby
 Indexes.configure do |config|
 
@@ -77,7 +77,7 @@ end
 
 ### Analysis
 
-You can customize the analysis setting in the configuration:
+If you need to personalize the analysis, add it to the configuration:
 ```ruby
 Indexes.configure do |config|
 
@@ -108,7 +108,7 @@ Generate an index:
 $ bundle exec rails g index products
 ```
 
-Define the mappings, serializatio and search in the index:
+Define the mappings, serialization and search in the index:
 ```ruby
 Indexes.define :products do
 
@@ -143,8 +143,6 @@ Indexes.define :products do
 end
 ```
 
-NOTE: Properties are referenced from the configuration file.
-
 Then everytime you create, update or destroy a record the index will be updated:
 ```ruby
 product = Product.create(name: 'Les Paul', category: 'Gibson')
@@ -157,7 +155,9 @@ product.reindex
 product.unindex
 ```
 
-Or invoke the rake tasks to process all records:
+### Rake tasks
+
+At any time you can build/rebuild your indexes using:
 ```
 $ bundle exec rake indexes:build
 $ bundle exec rake indexes:rebuild
@@ -165,9 +165,14 @@ $ bundle exec rake indexes:rebuild
 
 ### Search
 
-Then you can use the search method:
+Use the search method of the model:
 ```ruby
-products = Product.search(name: 'Test')
+products = Product.search(name: 'Les Paul')
+```
+
+You can include :
+```ruby
+Product.search.includes(:shop)
 ```
 
 The result can be used as a collection in views:
@@ -175,30 +180,17 @@ The result can be used as a collection in views:
 <%= render products %>
 ```
 
-### Includes
-
-Same as using activerecord relations:
-```ruby
-Product.includes(:shop)
-```
-
-### With / Without
-
-You can force a record to be part of the results by id:
-```ruby
-Product.search.with(4)
-```
-
-Or the opposite:
-```ruby
-Product.search.without(4)
-```
-
 ### Pagination
 
 Works the same as [pagers gem](https://github.com/mmontossi/pagers):
 ```ruby
 Product.search.page(1, padding: 4, length: 30)
+```
+
+You can force records to be or not part of the results by id:
+```ruby
+Product.search.page(1, with: 4)
+Product.search.page(1, without: 4)
 ```
 
 And you can send the collection directly to the view helper:
