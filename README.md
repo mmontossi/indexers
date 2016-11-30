@@ -213,11 +213,11 @@ Same as using activerecord:
 Product.search.order(name: :asc)
 ```
 
-You can use a computed order by declare it in the configuration:
+You can use a computed sort by declare it in the configuration:
 ```ruby
 Indexes.configure do |config|
 
-  config.add_computed_order :price do |direction|
+  config.computed_sort :price do |direction|
     _script do
       type 'number'
       script do
