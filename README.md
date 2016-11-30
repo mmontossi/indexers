@@ -36,14 +36,16 @@ $ brew install elasticsearch24
 
 NOTE: This gem is tested agains version 2.4.
 
-## Configuration
+## Usage
 
-Run the install generator:
+### Configuration
+
+Generate the configuration file:
 ```
 $ bundle exec rails g indexes:install
 ```
 
-Set the global settings:
+Configure the connection, analysis, mappings and computed sorts:
 ```ruby
 Indexes.configure do |config|
 
@@ -70,6 +72,15 @@ Indexes.configure do |config|
     end
   end
 
+end
+```
+
+### Analysis
+
+You can customize the analysis setting in the configuration:
+```ruby
+Indexes.configure do |config|
+
   config.analysis do
     filter do
       ngram do
@@ -78,43 +89,34 @@ Indexes.configure do |config|
         max_gram 20
       end
     end
-  end
-
-  config.suggestions do |name, term, options={}|
-    type = name.to_s.singularize
-    text (term || '')
-    completion do
-      field "#{type}_suggestions"
-    end
-  end
-
-  config.add_computed_sort :price do |direction|
-    _script do
-      type 'number'
-      script do
-        inline "if (_source.currency == 'UYU') { doc['price'].value * 30 }"
+    analyzer do
+      ngram do
+        type 'custom'
+        tokenizer 'standard'
+        filter %w(lowercase ngram)
       end
-      order direction
     end
   end
 
 end
 ```
 
+### Indexing
+
 Generate an index:
 ```
-$ bundle exec rails g indexes:index products
+$ bundle exec rails g index products
 ```
 
-Define the index:
+Define the mappings, serializatio and search in the index:
 ```ruby
 Indexes.define :products do
 
   mappings do
-    properties :name, :category, :price, :product_suggestions
+    properties :name, :category, :price
   end
 
-  serializer do |record|
+  serialization do |record|
     set record, :name, :category, :price
     product_suggestions do
       input [record.name, transliterate(record.name)].uniq
@@ -141,40 +143,34 @@ Indexes.define :products do
 end
 ```
 
-## Usage
+NOTE: Properties are referenced from the configuration file.
 
-### Indexing
-
-Ocurrs everytime you create, update or destroy a record:
+Then everytime you create, update or destroy a record the index will be updated:
 ```ruby
 product = Product.create(name: 'Les Paul', category: 'Gibson')
 ```
 
-You can force it manually by:
+You can force it individually by using this methods:
 ```ruby
 product.index
 product.reindex
 product.unindex
 ```
 
-At any time you can force a full rebuild:
-```
-$ bundle exec rake indexes:rebuild
-```
-
-Or if you need just a build:
+Or invoke the rake tasks to process all records:
 ```
 $ bundle exec rake indexes:build
+$ bundle exec rake indexes:rebuild
 ```
 
 ### Search
 
-The search parameters are sent to previous configured block:
+Then you can use the search method:
 ```ruby
 products = Product.search(name: 'Test')
 ```
 
-You can use the returned value as a collection in views:
+The result can be used as a collection in views:
 ```erb
 <%= render products %>
 ```
@@ -183,55 +179,80 @@ You can use the returned value as a collection in views:
 
 Same as using activerecord relations:
 ```ruby
-Product.search(includes: :shop)
+Product.includes(:shop)
 ```
 
 ### With / Without
 
 You can force a record to be part of the results by id:
 ```ruby
-Product.search(with: 4)
+Product.search.with(4)
 ```
 
 Or the opposite:
 ```ruby
-Product.search(without: 4)
+Product.search.without(4)
 ```
 
 ### Pagination
 
 Works the same as [pagers gem](https://github.com/mmontossi/pagers):
 ```ruby
-products.page 1, padding: 4, length: 30
+Product.search.page(1, padding: 4, length: 30)
 ```
 
-And you can send the collection directly to the helper in views:
+And you can send the collection directly to the view helper:
 ```erb
 <%= paginate products %>
 ```
 
 ### Order
 
-Works the same as in relations:
+Same as using activerecord order:
 ```ruby
 products.order(name: :asc)
 ```
 
-To use a computed_sort:
+You can use computed sort by declare them in the configuration:
 ```ruby
-products.order(price: :asc)
-```
+Indexes.configure do |config|
 
-NOTE: To sort by a string column, you must declare the mapping raw.
+  config.add_computed_sort :price do |direction|
+    _script do
+      type 'number'
+      script do
+        inline "if (_source.currency == 'UYU') { doc['price'].value * 30 }"
+      end
+      order direction
+    end
+  end
+
+end
+```
 
 ### Suggestions
 
-The suggestion parameters are sent to previous configured block:
+You need to first define the logic in the configuration:
+```ruby
+Indexes.configure do |config|
+
+  config.suggestions do |name, term, options={}|
+    type = name.to_s.singularize
+    text (term || '')
+    completion do
+      field "#{type}_suggestions"
+    end
+  end
+
+end
+```
+
+Then you can get suggestions using the suggest method:
 ```ruby
 Indexes.suggest :products, 'gibson'
 ```
 
-Returns array of hashes with a text property:
+The result is an array of hashes with a text property:
 ```ruby
 [{ text: 'Les Paul' }, ...]
 ```
