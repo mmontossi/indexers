@@ -113,7 +113,7 @@ Define the mappings, serialization and search in the index:
 Indexes.define :products do
 
   mappings do
-    properties :name, :category, :price
+    properties :name, :category, :price, :product_suggestions
   end
 
   serialization do |record|
