@@ -165,9 +165,9 @@ $ bundle exec rake indexes:rebuild
 
 ### Search
 
-Use the include search method in the model:
+Use the included search method in the model:
 ```ruby
-products = Product.search(name: 'Les Paul')
+products = Product.search('Les Paul')
 ```
 
 The result can be used as a collection in views:
@@ -177,22 +177,28 @@ The result can be used as a collection in views:
 
 ### Includes
 
-Same as using activerecod:
+Similar to using activerecod:
 ```ruby
 Product.search.includes(:shop)
+```
+
+### With / Without
+
+You can force a record to be part of the results by id:
+```ruby
+Products.search.with(4)
+```
+
+Or the opposite:
+```ruby
+Products.search.without(4)
 ```
 
 ### Pagination
 
 Works the same as [pagers gem](https://github.com/mmontossi/pagers):
 ```ruby
-Product.search.page(1, padding: 4, length: 30)
-```
-
-You can force records to be or not part of the results by id:
-```ruby
-Product.search.page(1, with: 4)
-Product.search.page(1, without: 4)
+Products.search.page(1, padding: 4, length: 30)
 ```
 
 And you can send the collection directly to the view helper:
@@ -204,7 +210,7 @@ And you can send the collection directly to the view helper:
 
 Same as using activerecord:
 ```ruby
-products.order(name: :asc)
+Product.search.order(name: :asc)
 ```
 
 You can use a computed order by declare it in the configuration:
