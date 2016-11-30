@@ -6,9 +6,7 @@ Indexes.define :products do
   end
 
   serialization do |record|
-    %i(name category shop_id price currency).each do |attribute|
-      send attribute, record.send(attribute)
-    end
+    extract record, :name, :category, :shop_id, :price, :currency
     product_suggestions do
       input [record.name, transliterate(record.name)].uniq
       output record.name

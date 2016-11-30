@@ -117,7 +117,7 @@ Indexes.define :products do
   end
 
   serialization do |record|
-    set record, :name, :category, :price
+    extract record, :name, :category, :price
     product_suggestions do
       input [record.name, transliterate(record.name)].uniq
       output record.name
