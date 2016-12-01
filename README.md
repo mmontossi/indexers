@@ -36,16 +36,14 @@ $ brew install elasticsearch24
 
 NOTE: This gem is tested agains version 2.4.
 
-## Usage
-
-### Configuration
+## Configuration
 
 Generate the configuration file:
 ```
 $ bundle exec rails g indexes:install
 ```
 
-Configure the connection and mappings:
+Set the global settings:
 ```ruby
 Indexes.configure do |config|
 
@@ -72,23 +70,7 @@ Indexes.configure do |config|
     end
   end
 
-end
-```
-
-### Analysis
-
-If you need to personalize the analysis, add it to the configuration:
-```ruby
-Indexes.configure do |config|
-
   config.analysis do
-    filter do
-      ngram do
-        type 'nGram'
-        min_gram 2
-        max_gram 20
-      end
-    end
     analyzer do
       ngram do
         type 'custom'
@@ -101,7 +83,7 @@ Indexes.configure do |config|
 end
 ```
 
-### Indexing
+### Definitions
 
 Generate an index:
 ```
@@ -142,6 +124,33 @@ Indexes.define :products do
 
 end
 ```
+
+If you need to personalize the analysis, add it to the configuration:
+
+```ruby
+Indexes.configure do |config|
+
+  config.analysis do
+    filter do
+      ngram do
+        type 'nGram'
+        min_gram 2
+        max_gram 20
+      end
+    end
+    analyzer do
+      ngram do
+        type 'custom'
+        tokenizer 'standard'
+        filter %w(lowercase ngram)
+      end
+    end
+  end
+
+end
+```
+
+### Indexing
 
 The index will be updated every time a record is created, updated or destroyed:
 ```ruby
