@@ -115,7 +115,7 @@ Indexes.define :products do
 end
 ```
 
-If you need to personalize the analysis, add it to the configuration:
+If you need to personalize the analysis, you have to added to the configuration:
 
 ```ruby
 Indexes.configure do |config|
