@@ -70,16 +70,6 @@ Indexes.configure do |config|
     end
   end
 
-  config.analysis do
-    analyzer do
-      ngram do
-        type 'custom'
-        tokenizer 'standard'
-        filter %w(lowercase ngram)
-      end
-    end
-  end
-
 end
 ```
 
