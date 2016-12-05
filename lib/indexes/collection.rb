@@ -151,7 +151,7 @@ module Indexes
           Rails.application.eager_load!
         end
         if defined?(Pagers)
-          Pagers.config[name]
+          Pagers.configuration.send name
         else
           default
         end

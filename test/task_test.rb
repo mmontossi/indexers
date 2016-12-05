@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class TasksTest < ActiveSupport::TestCase
+class TaskTest < ActiveSupport::TestCase
 
   setup do
     Dummy::Application.load_tasks

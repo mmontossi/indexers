@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class IndexesTest < ActiveSupport::TestCase
+class IndexTest < ActiveSupport::TestCase
 
   setup do
     Indexes.build
@@ -15,7 +15,7 @@ class IndexesTest < ActiveSupport::TestCase
   end
 
   test 'find' do
-    assert Indexes.find(:products)
+    assert Indexes.definitions.find(:products)
   end
 
   test 'exist' do

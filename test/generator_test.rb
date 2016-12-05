@@ -1,13 +1,13 @@
 require 'test_helper'
 require 'rails/generators'
-require 'generators/indexes/install_generator'
-require 'generators/index_generator'
+require 'generators/indexes/install/install_generator'
+require 'generators/index/index_generator'
 
-class GeneratorsTest < Rails::Generators::TestCase
-  destination File.expand_path('../tmp', File.dirname(__FILE__))
+class GeneratorTest < Rails::Generators::TestCase
+  destination Rails.root.join('tmp')
 
   teardown do
-    FileUtils.rm_rf self.destination_root
+    FileUtils.rm_rf destination_root
   end
 
   test 'install' do

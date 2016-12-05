@@ -1,9 +1,9 @@
 module Indexes
   class Railtie < Rails::Railtie
 
-    initializer :indexes do
-      Dir[Rails.root.join('app/indexes/*')].each do |index|
-        load index
+    config.after_initialize do
+      Dir[Rails.root.join('app/indexes/*')].each do |file|
+        load file
       end
     end
 

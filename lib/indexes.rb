@@ -2,13 +2,14 @@ require 'indexes/dsl/api'
 require 'indexes/dsl/mappings'
 require 'indexes/dsl/search'
 require 'indexes/dsl/serialization'
+require 'indexes/collection'
 require 'indexes/concern'
 require 'indexes/configuration'
+require 'indexes/definitions'
 require 'indexes/index'
 require 'indexes/pagination'
 require 'indexes/proxy'
 require 'indexes/railtie'
-require 'indexes/collection'
 require 'indexes/version'
 
 module Indexes
@@ -39,22 +40,12 @@ module Indexes
       @configuration ||= Configuration.new
     end
 
+    def definitions
+      @definitions ||= Definitions.new
+    end
+
     def define(*args, &block)
       Proxy.new *args, &block
-    end
-
-    def add(*args)
-      index = Index.new(*args)
-      registry[index.name] = index
-    end
-
-    def find(name)
-      registry[name]
-    end
-    alias_method :[], :find
-
-    def each(&block)
-      registry.values.sort.each &block
     end
 
     def build
@@ -64,16 +55,16 @@ module Indexes
           body: { settings: configuration.analysis }
         )
       end
-      each &:build
-    end
-
-    def exist?(type)
-      client.indices.exists? index: namespace, type: type
+      definitions.each &:build
     end
 
     def rebuild
       destroy
       build
+    end
+
+    def exist?(type)
+      client.indices.exists? index: namespace, type: type
     end
 
     def destroy
@@ -88,12 +79,6 @@ module Indexes
         body: { suggestions: Dsl::Api.new(args, &configuration.suggestions).to_h }
       )
       response['suggestions'].first['options'].map &:symbolize_keys
-    end
-
-    private
-
-    def registry
-      @registry ||= {}
     end
 
   end

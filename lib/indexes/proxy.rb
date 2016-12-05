@@ -4,7 +4,7 @@ module Indexes
     def initialize(name, options={}, &block)
       @options = options
       instance_eval &block
-      Indexes.add name, @options
+      Indexes.definitions.add name, @options
     end
 
     %i(mappings serialization search).each do |name|
