@@ -9,7 +9,6 @@ module Indexes
     def find(name)
       registry[name]
     end
-    alias_method :[], :find
 
     def each(&block)
       registry.values.sort.each &block

@@ -4,9 +4,11 @@ module Indexes
 
       private
 
-      def add_block(name, args, options)
+      def add_block(name, args, options, &block)
         if %i(functions must must_not should).include?(name)
-          @parent[name] = []
+          child = []
+          @parent[name] = child
+          self.class.new [], child, &block
         else
           super
         end
@@ -14,7 +16,7 @@ module Indexes
 
       def add_argument(name, args, options)
         if name == :query && args.first.is_a?(Symbol)
-          @parent[name] = Indexes[args.first].search(options).query[:query]
+          @parent[name] = Indexes.definitions.find(args.first).search([options]).query[:query]
         else
           super
         end

@@ -5,6 +5,10 @@ Indexes.configure do |config|
   config.trace = false
 
   config.mappings do
+    category type: 'string'
+    shop_id type: 'long'
+    price type: 'long'
+    currency type: 'string'
     name do
       type 'string'
       fields do
@@ -14,10 +18,6 @@ Indexes.configure do |config|
         end
       end
     end
-    category type: 'string'
-    shop_id type: 'long'
-    price type: 'long'
-    currency type: 'string'
     product_suggestions do
       type 'completion'
       analyzer 'simple'

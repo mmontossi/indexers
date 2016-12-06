@@ -3,6 +3,7 @@ require 'test_helper'
 class DslTest < ActiveSupport::TestCase
 
   test 'search' do
+    shop = Shop.create
     seed = rand
     days = [1,2,3]
     opens_at = Time.now.to_i
@@ -35,15 +36,42 @@ class DslTest < ActiveSupport::TestCase
                   must: [
                     { range: { :'schedules.opens_at' => { lte: opens_at } } }
                   ],
-                  must_not: []
+                  must_not: [
+                    {
+                      has_parent: {
+                        type: 'products',
+                        query: {
+                          filtered: {
+                            filter: {
+                              bool: {
+                                must: [
+                                  {
+                                    term: {
+                                      _parent: shop.id
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            query: {
+                              match_all: {}
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
                 }
               }
             }
           }
         },
+        sort: [
+          { name: 'asc' }
+        ],
         size: {}
       },
-      build_request do
+      build(:search) do
         query do
           function_score do
             functions do
@@ -72,11 +100,18 @@ class DslTest < ActiveSupport::TestCase
                     end
                   end
                   must_not do
+                    has_parent do
+                      type 'products'
+                      query :products, shop: shop
+                    end
                   end
                 end
               end
             end
           end
+        end
+        sort %w(asc desc) do |order|
+          name order
         end
         size
       end
@@ -85,8 +120,9 @@ class DslTest < ActiveSupport::TestCase
 
   private
 
-  def build_request(&block)
-    Indexes::Dsl::Search.new(&block).to_h
+  def build(type, &block)
+    klass = Indexes::Dsl.const_get(type.to_s.classify)
+    klass.new(&block).to_h
   end
 
 end

@@ -3,7 +3,6 @@ module Indexes
     class Api
 
       def initialize(args=[], parent={}, &block)
-        @args = args
         @parent = parent
         instance_exec *args, &block
       end
@@ -12,8 +11,7 @@ module Indexes
         options = args.extract_options!
         name = name.to_sym
         if block_given?
-          child = add_block(name, args, options)
-          continue child, &block
+          add_block name, args, options, &block
         elsif args.size > 0
           add_argument name, args, options
         elsif options.any?
@@ -29,28 +27,39 @@ module Indexes
 
       private
 
-      def add_block(name, args, options)
+      def add_block(name, args, options, &block)
+        case args.first
+        when String,Symbol
+          child = {}
+          node = { args.first.to_sym => child }
+        when Enumerable
+          child = node = []
+        else
+          child = node = {}
+        end
         case @parent
         when Array
-          item = options.merge(name => {})
-          @parent << item
-          child = item[name]
+          @parent << options.merge(name => node)
         when Hash
-          if @parent.has_key?(name)
-            child = @parent[name].merge!(options)
-          else
-            child = @parent[name] = {}
-          end
+          @parent[name] = node
         end
-        if args.any?
-          child[args.first.to_sym] = {}
+        case args.first
+        when Enumerable
+          args.first.each do |arg|
+            self.class.new [arg], child, &block
+          end
         else
-          child
+          self.class.new [], child, &block
         end
       end
 
       def add_argument(name, args, options)
-        @parent[name] = args.first
+        case @parent
+        when Array
+          @parent << { name => args.first }
+        when Hash
+          @parent[name] = args.first
+        end
       end
 
       def add_options(name, options)
@@ -74,10 +83,6 @@ module Indexes
         when Hash
           @parent[name] = {}
         end
-      end
-
-      def continue(child, &block)
-        self.class.new @args, child, &block
       end
 
     end
