@@ -110,7 +110,7 @@ class DslTest < ActiveSupport::TestCase
             end
           end
         end
-        sort %w(asc desc) do |order|
+        sort %w(asc) do |order|
           name order
         end
         size
