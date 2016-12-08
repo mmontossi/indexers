@@ -137,11 +137,9 @@ module Indexes
 
     def indexify_model
       index = self
-      model.class_eval do
-        include Indexes::Concern
-        define_singleton_method :index do
-          index
-        end
+      model.include Indexes::Concern
+      model.define_singleton_method :index do
+        index
       end
     end
 

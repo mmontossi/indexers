@@ -32,7 +32,7 @@ module Indexes
         when String,Symbol
           child = {}
           node = { args.first.to_sym => child }
-        when Enumerable
+        when Enumerable,ActiveRecord::Relation
           child = node = []
         else
           child = node = {}
@@ -44,7 +44,7 @@ module Indexes
           @parent[name] = node
         end
         case args.first
-        when Enumerable
+        when Enumerable,ActiveRecord::Relation
           args.first.each do |arg|
             self.class.new [arg], child, &block
           end
