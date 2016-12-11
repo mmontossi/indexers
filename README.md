@@ -73,6 +73,31 @@ Indexers.configure do |config|
 end
 ```
 
+If you need to personalize the analysis, you can it here:
+
+```ruby
+Indexers.configure do |config|
+
+  config.analysis do
+    filter do
+      ngram do
+        type 'nGram'
+        min_gram 2
+        max_gram 20
+      end
+    end
+    analyzer do
+      ngram do
+        type 'custom'
+        tokenizer 'standard'
+        filter %w(lowercase ngram)
+      end
+    end
+  end
+
+end
+```
+
 ### Definitions
 
 Generate an index:
@@ -82,7 +107,7 @@ $ bundle exec rails g indexer products
 
 Define the mappings, serialization and search in the index:
 ```ruby
-Indexers.define :products do
+Indexers.define :product do
 
   mappings do
     properties :name, :category, :price, :product_suggestions
@@ -115,30 +140,52 @@ Indexers.define :products do
 end
 ```
 
-If you need to personalize the analysis, you have to add it to the configuration:
+### Traits
 
+You can dry complex searches or serializations using traits:
 ```ruby
-Indexers.configure do |config|
+Indexers.define :product do
 
-  config.analysis do
-    filter do
-      ngram do
-        type 'nGram'
-        min_gram 2
-        max_gram 20
+  search do |*args|
+    options = args.extract_options!
+    shop = options[:shop]
+    term = args.first
+    query do
+      filtered do
+        traits :shop
+        query do
+          if term.present?
+            multi_match do
+              query term
+              type 'phrase_prefix'
+              fields %w(name category)
+            end
+          else
+            match_all
+          end
+        end
       end
     end
-    analyzer do
-      ngram do
-        type 'custom'
-        tokenizer 'standard'
-        filter %w(lowercase ngram)
+  end
+
+  trait :shop do
+    filter do
+      bool do
+        must do
+          if shop
+            term do
+              _parent shop.id
+            end
+          end
+        end
       end
     end
   end
 
 end
 ```
+
+NOTE: The binding is persisted, there is no need to redefine variables.
 
 ### Indexing
 
@@ -248,7 +295,7 @@ end
 
 Then you can get suggestions using the suggest method:
 ```ruby
-Indexers.suggest :products, 'gibson'
+Indexers.suggest :product, 'gibson'
 ```
 
 The result is an array of hashes with a text property:
