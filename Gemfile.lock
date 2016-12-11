@@ -45,7 +45,6 @@ GEM
       tzinfo (~> 1.1)
     arel (6.0.3)
     builder (3.2.2)
-    byebug (9.0.6)
     concurrent-ruby (1.0.2)
     elasticsearch (2.0.0)
       elasticsearch-api (= 2.0.0)
@@ -123,7 +122,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  byebug
   indexers!
   mocha (~> 1.1)
   pg (~> 0.18)

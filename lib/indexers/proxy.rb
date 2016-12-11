@@ -2,34 +2,20 @@ module Indexers
   class Proxy
 
     def initialize(name, options={}, &block)
-      @mappings = {}
-      @serialization = {}
-      @searches = {}
-      @traits = {}
-      @options = options
+      @name = name
+      @options = options.merge(traits: {})
       instance_eval &block
-      Indexers.definitions.add(
-        name,
-        @mappings,
-        @serialization,
-        @searches,
-        @traits,
-        @options
-      )
+      Indexers.definitions.add name, @options
     end
 
-    %i(serialization searches).each do |name|
+    %i(mappings serialize search).each do |name|
       define_method name do |&block|
-        instance_variable_set "@#{name}", block
+        @options[name] = block
       end
     end
 
-    def mappings(&block)
-      @mappings = Dsl::Mappings.new(&block).to_h
-    end
-
     def trait(name, &block)
-      @traits[name] = block
+      @options[:traits][name] = block
     end
 
   end

@@ -57,7 +57,7 @@ module Indexers
       values = []
       options.each do |property, direction|
         if block = Indexers.computed_sorts.find(property)
-          values << Dsl::Api.new(direction, &block).to_h
+          values << { _script: Dsl::Api.new(direction, &block).to_h }
         elsif property == :id
           values << { _uid: { order: direction } }
         elsif mappings.has_key?(property) && mappings[property][:type] == 'string'
@@ -84,8 +84,8 @@ module Indexers
       @query ||= begin
         pagination = options.slice(:from, :size, :sort)
         without_ids = fetch_ids(options[:without])
-        body = Dsl::Searches.new(indexer, args, &indexer.searches).to_h[:query]
-        request = Dsl::Searches.new do
+        body = Dsl::Search.new(indexer, args, &indexer.options[:search]).to_h[:query]
+        request = Dsl::Search.new do
           if without_ids.any?
             query do
               filtered do

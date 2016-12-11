@@ -4,11 +4,11 @@ Indexers.define :shop do
     properties :name
   end
 
-  serialization do |record|
+  serialize do |record|
     name record.name
   end
 
-  searches do |*args|
+  search do |*args|
     options = args.extract_options!
     term = args.first
     query do

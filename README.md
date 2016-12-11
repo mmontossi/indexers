@@ -102,7 +102,7 @@ end
 
 Generate an index:
 ```
-$ bundle exec rails g indexer products
+$ bundle exec rails g indexers:indexer products
 ```
 
 Define the mappings, serialization and search in the index:
@@ -113,7 +113,7 @@ Indexers.define :product do
     properties :name, :category, :price, :product_suggestions
   end
 
-  serialization do |record|
+  serialize do |record|
     extract record, :name, :category, :price
     product_suggestions do
       input [record.name, transliterate(record.name)].uniq

@@ -1,6 +1,6 @@
 module Indexers
   module Dsl
-    class Searches < Api
+    class Search < Api
       include Traitable
 
       private
@@ -18,7 +18,7 @@ module Indexers
       def add_argument(name, args, options)
         if name == :query && args.any?
           indexer = Indexers.definitions.find(args.first)
-          hash = self.class.new(indexer, [options], &indexer.searches).to_h
+          hash = self.class.new(indexer, [options], &indexer.options[:search]).to_h
           @parent[name] = hash[:query]
         else
           super

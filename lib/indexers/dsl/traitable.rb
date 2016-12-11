@@ -14,7 +14,7 @@ module Indexers
         if @indexer
           @binding = @block.binding
           names.each do |name|
-            instance_eval &@indexer.traits[name]
+            instance_eval &@indexer.options[:traits][name]
           end
           @binding = nil
         end

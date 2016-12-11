@@ -55,13 +55,11 @@ Indexers.configure do |config|
   end
 
   config.computed_sort :price do |direction|
-    _script do
-      type 'number'
-      script do
-        inline "if (_source.currency == 'UYU') { doc['price'].value * 30 }"
-      end
-      order direction
+    type 'number'
+    script do
+      inline "if (_source.currency == 'UYU') { doc['price'].value * 30 }"
     end
+    order direction
   end
 
 end

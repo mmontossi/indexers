@@ -1,7 +1,7 @@
 require 'indexers/dsl/api'
 require 'indexers/dsl/mappings'
 require 'indexers/dsl/traitable'
-require 'indexers/dsl/searches'
+require 'indexers/dsl/search'
 require 'indexers/dsl/serialization'
 require 'indexers/extensions/active_record/base'
 require 'indexers/collection'

@@ -121,7 +121,7 @@ class DslTest < ActiveSupport::TestCase
   private
 
   def build(&block)
-    Indexers::Dsl::Searches.new(&block).to_h
+    Indexers::Dsl::Search.new(&block).to_h
   end
 
 end

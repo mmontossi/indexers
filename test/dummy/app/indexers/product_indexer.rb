@@ -5,7 +5,7 @@ Indexers.define :product do
     parent :shop
   end
 
-  serialization do |record|
+  serialize do |record|
     extract record, :name, :category, :shop_id, :price, :currency
     product_suggestions do
       input [record.name, transliterate(record.name)].uniq
@@ -16,7 +16,7 @@ Indexers.define :product do
     end
   end
 
-  searches do |*args|
+  search do |*args|
     options = args.extract_options!
     shop = options[:shop]
     term = args.first

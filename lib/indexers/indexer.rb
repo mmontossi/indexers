@@ -1,19 +1,19 @@
 module Indexers
   class Indexer
 
-    attr_reader :name, :mappings, :serialization, :searches, :traits, :options
+    attr_reader :name, :options
 
-    def initialize(name, mappings, serialization, searches, traits, options)
+    def initialize(name, options)
       @name = name
-      @mappings = mappings
-      @serialization = serialization
-      @searches = searches
-      @traits = traits
       @options = options
     end
 
     def model
       options.fetch(:class_name, name.to_s.classify).constantize
+    end
+
+    def mappings
+      @mappings ||= Dsl::Mappings.new(&options[:mappings]).to_h
     end
 
     def has_parent?
@@ -125,7 +125,7 @@ module Indexers
     end
 
     def serialize(record)
-      Dsl::Serialization.new(self, record, &serialization).to_h
+      Dsl::Serialization.new(self, record, &options[:serialize]).to_h
     end
 
   end
