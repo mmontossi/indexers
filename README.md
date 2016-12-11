@@ -1,11 +1,11 @@
-[![Gem Version](https://badge.fury.io/rb/indexes.svg)](http://badge.fury.io/rb/indexes)
-[![Code Climate](https://codeclimate.com/github/mmontossi/indexes/badges/gpa.svg)](https://codeclimate.com/github/mmontossi/indexes)
-[![Build Status](https://travis-ci.org/mmontossi/indexes.svg)](https://travis-ci.org/mmontossi/indexes)
-[![Dependency Status](https://gemnasium.com/mmontossi/indexes.svg)](https://gemnasium.com/mmontossi/indexes)
+[![Gem Version](https://badge.fury.io/rb/indexers.svg)](http://badge.fury.io/rb/indexers)
+[![Code Climate](https://codeclimate.com/github/mmontossi/indexers/badges/gpa.svg)](https://codeclimate.com/github/mmontossi/indexers)
+[![Build Status](https://travis-ci.org/mmontossi/indexers.svg)](https://travis-ci.org/mmontossi/indexers)
+[![Dependency Status](https://gemnasium.com/mmontossi/indexers.svg)](https://gemnasium.com/mmontossi/indexers)
 
-# Indexes
+# Indexers
 
-Model search indexes with elasticsearch in rails.
+Model search indexers with elasticsearch in rails.
 
 ## Why
 
@@ -21,7 +21,7 @@ I did this gem to:
 
 Put this line in your Gemfile:
 ```ruby
-gem 'indexes'
+gem 'indexers'
 ```
 
 Then bundle:
@@ -40,12 +40,12 @@ NOTE: This gem is tested agains version 2.4.
 
 Generate the configuration file:
 ```
-$ bundle exec rails g indexes:install
+$ bundle exec rails g indexers:install
 ```
 
 Set the global settings:
 ```ruby
-Indexes.configure do |config|
+Indexers.configure do |config|
 
   config.hosts = %w(localhost:9200)
   config.log = false
@@ -77,12 +77,12 @@ end
 
 Generate an index:
 ```
-$ bundle exec rails g index products
+$ bundle exec rails g indexer products
 ```
 
 Define the mappings, serialization and search in the index:
 ```ruby
-Indexes.define :products do
+Indexers.define :products do
 
   mappings do
     properties :name, :category, :price, :product_suggestions
@@ -118,7 +118,7 @@ end
 If you need to personalize the analysis, you have to add it to the configuration:
 
 ```ruby
-Indexes.configure do |config|
+Indexers.configure do |config|
 
   config.analysis do
     filter do
@@ -156,10 +156,10 @@ product.unindex
 
 ### Rake tasks
 
-At any time you can build/rebuild your indexes using:
+At any time you can build/rebuild your indexers using:
 ```
-$ bundle exec rake indexes:build
-$ bundle exec rake indexes:rebuild
+$ bundle exec rake indexers:build
+$ bundle exec rake indexers:rebuild
 ```
 
 ### Search
@@ -214,7 +214,7 @@ Product.search.order(name: :asc)
 
 You can use a computed sort by declare it in the configuration:
 ```ruby
-Indexes.configure do |config|
+Indexers.configure do |config|
 
   config.computed_sort :price do |direction|
     _script do
@@ -233,7 +233,7 @@ end
 
 You need to first define the logic in the configuration:
 ```ruby
-Indexes.configure do |config|
+Indexers.configure do |config|
 
   config.suggestions do |name, term, options={}|
     type = name.to_s.singularize
@@ -248,7 +248,7 @@ end
 
 Then you can get suggestions using the suggest method:
 ```ruby
-Indexes.suggest :products, 'gibson'
+Indexers.suggest :products, 'gibson'
 ```
 
 The result is an array of hashes with a text property:

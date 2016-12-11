@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    indexes (4.0.0.2)
+    indexers (4.1.0.0)
       elasticsearch (~> 2.0.0)
       rails (>= 4.2.0, < 4.3.0)
 
@@ -122,7 +122,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  indexes!
+  indexers!
   mocha (~> 1.1)
   pg (~> 0.18)
 

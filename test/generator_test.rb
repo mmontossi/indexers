@@ -1,7 +1,7 @@
 require 'test_helper'
 require 'rails/generators'
-require 'generators/indexes/install/install_generator'
-require 'generators/index/index_generator'
+require 'generators/indexers/install/install_generator'
+require 'generators/indexers/indexer/indexer_generator'
 
 class GeneratorTest < Rails::Generators::TestCase
   destination Rails.root.join('tmp')
@@ -11,15 +11,15 @@ class GeneratorTest < Rails::Generators::TestCase
   end
 
   test 'install' do
-    self.class.tests Indexes::Generators::InstallGenerator
+    self.class.tests Indexers::Generators::InstallGenerator
     run_generator
-    assert_file 'config/initializers/indexes.rb'
+    assert_file 'config/initializers/indexers.rb'
   end
 
   test 'index' do
-    self.class.tests Indexes::Generators::IndexGenerator
+    self.class.tests Indexers::Generators::IndexerGenerator
     run_generator %w(products)
-    assert_file 'app/indexes/products_index.rb'
+    assert_file 'app/indexers/products_indexer.rb'
   end
 
 end

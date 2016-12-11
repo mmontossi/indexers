@@ -71,7 +71,7 @@ class DslTest < ActiveSupport::TestCase
         ],
         size: {}
       },
-      build(:search) do
+      build do
         query do
           function_score do
             functions do
@@ -102,7 +102,7 @@ class DslTest < ActiveSupport::TestCase
                   must_not do
                     has_parent do
                       type 'products'
-                      query :products, shop: shop
+                      query :product, shop: shop
                     end
                   end
                 end
@@ -120,9 +120,8 @@ class DslTest < ActiveSupport::TestCase
 
   private
 
-  def build(type, &block)
-    klass = Indexes::Dsl.const_get(type.to_s.classify)
-    klass.new(&block).to_h
+  def build(&block)
+    Indexers::Dsl::Searches.new(&block).to_h
   end
 
 end

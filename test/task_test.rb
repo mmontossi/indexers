@@ -7,18 +7,24 @@ class TaskTest < ActiveSupport::TestCase
   end
 
   teardown do
-    Indexes.destroy
+    Indexers.unindex
   end
 
-  test 'build' do
+  test 'index' do
     assert_nothing_raised do
-      Rake::Task['indexes:build'].invoke
+      Rake::Task['indexers:index'].invoke
     end
   end
 
-  test 'rebuild' do
+  test 'reindex' do
     assert_nothing_raised do
-      Rake::Task['indexes:rebuild'].invoke
+      Rake::Task['indexers:reindex'].invoke
+    end
+  end
+
+  test 'unindex' do
+    assert_nothing_raised do
+      Rake::Task['indexers:unindex'].invoke
     end
   end
 
