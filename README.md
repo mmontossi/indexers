@@ -47,10 +47,6 @@ Set the global settings:
 ```ruby
 Indexers.configure do |config|
 
-  config.hosts = %w(localhost:9200)
-  config.log = false
-  config.trace = false
-
   config.mappings do
     name do
       type 'string'
@@ -97,6 +93,8 @@ Indexers.configure do |config|
 
 end
 ```
+
+NOTE: You may want to personalize the generated config/elasticsearch.yml.
 
 ### Definitions
 
@@ -228,23 +226,21 @@ Similar to using activerecod:
 Product.search.includes(:shop)
 ```
 
-### With / Without
-
-You can force a record to be part of the results by id:
-```ruby
-Products.search.with(4)
-```
-
-Or the opposite:
-```ruby
-Products.search.without(4)
-```
-
 ### Pagination
 
 Works the same as [pagers gem](https://github.com/mmontossi/pagers):
 ```ruby
 Products.search.page(1, padding: 4, length: 30)
+```
+
+You can force a record to be part of the results by id:
+```ruby
+Products.search.page(1, with: 4)
+```
+
+Or the opposite:
+```ruby
+Products.search.page(4, without: 4)
 ```
 
 And you can send the collection directly to the view helper:

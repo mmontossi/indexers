@@ -17,14 +17,6 @@ module Indexers
       @options = options
     end
 
-    def with(ids)
-      chain with: ids
-    end
-
-    def without(ids)
-      chain without: ids
-    end
-
     def includes(*args)
       chain includes: args
     end
@@ -44,12 +36,16 @@ module Indexers
           current_page
         end
       end
-      chain(
-        Pagination,
-        values,
+      overrides = {
         from: ((length * (current_page - 1)) + padding),
         size: length
-      )
+      }
+      %i(with without).each do |name|
+        if options.has_key?(name)
+          overrides[name] = options[name]
+        end
+      end
+      chain Pagination, values, overrides
     end
 
     def order(options)

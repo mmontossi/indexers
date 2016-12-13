@@ -9,10 +9,6 @@ module Indexers
         end
       end
 
-      def parent(value)
-        @parent[:_parent] = { type: value.to_s.parameterize('_') }
-      end
-
     end
   end
 end

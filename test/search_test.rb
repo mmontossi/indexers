@@ -47,8 +47,8 @@ class SearchTest < ActiveSupport::TestCase
     Shop.create id: 4
     sleep 2
 
-    assert_equal [4, 3], Shop.search.with(4).page(1, length: 2).map(&:id)
-    assert_equal [2, 1], Shop.search.without(3).map(&:id)
+    assert_equal [4, 3], Shop.search.page(1, length: 2, with: 4).map(&:id)
+    assert_equal [2, 1], Shop.search.page(1, without: 3).map(&:id)
   end
 
   test 'includes' do

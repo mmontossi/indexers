@@ -2,7 +2,7 @@ Indexers.define :product do
 
   mappings do
     properties :name, :category, :shop_id, :price, :currency, :product_suggestions
-    parent :shop
+    _parent type: 'shop'
   end
 
   serialize do |record|
