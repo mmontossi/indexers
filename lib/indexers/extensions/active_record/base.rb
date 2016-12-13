@@ -8,14 +8,8 @@ module Indexers
 
           def inherited(subclass)
             super
-            if subclass.name
-              id = subclass.name.parameterize('_').to_sym
-              if indexer = Indexers.definitions.find(id)
-                subclass.include Indexers::Concern
-                subclass.define_singleton_method :indexer do
-                  indexer
-                end
-              end
+            if File.exist?("#{Rails.root}/app/indexers/#{subclass.name.underscore}_indexer.rb")
+              subclass.include Indexers::Concern
             end
           end
 

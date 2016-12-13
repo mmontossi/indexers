@@ -22,10 +22,7 @@ module Indexers
       end
 
       def indexer
-        @indexer ||= begin
-
-
-        end
+        @indexer ||= Indexers.definitions.find(name.parameterize('_').to_sym)
       end
 
     end

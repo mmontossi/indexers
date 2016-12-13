@@ -2,7 +2,7 @@ module Indexers
   class Railtie < Rails::Railtie
 
     config.before_initialize do
-      Dir[Rails.root.join('app/indexers/**/*_indexer.rb')].each do |file|
+      Dir["#{Rails.root}/app/indexers/**/*_indexer.rb"].each do |file|
         load file
       end
     end
