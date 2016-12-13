@@ -1,7 +1,10 @@
-development:
+default: &default
   adapter: postgresql
+
+development:
+  <<: *default
   database: indexers_development
 
 test:
-  adapter: postgresql
+  <<: *default
   database: indexers_test

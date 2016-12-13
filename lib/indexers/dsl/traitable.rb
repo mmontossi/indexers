@@ -1,7 +1,6 @@
 module Indexers
   module Dsl
-    module Traitable
-      extend ActiveSupport::Concern
+    class Traitable < Api
 
       def initialize(indexer=nil, args=[], parent={}, binding=nil, &block)
         @indexer = indexer

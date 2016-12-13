@@ -1,7 +1,6 @@
 module Indexers
   module Dsl
-    class Search < Api
-      include Traitable
+    class Search < Traitable
 
       private
 

@@ -3,10 +3,10 @@ Indexers.define :<%= singular_table_name %><%= class_name_option %> do
   mappings do
   end
 
-  serialization do |record|
+  serialize do |record|
   end
 
-  searches do |*args|
+  search do |*args|
   end
 
 end

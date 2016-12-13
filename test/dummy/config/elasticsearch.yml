@@ -1,0 +1,15 @@
+default: &default
+  hosts: localhost
+  port: 9200
+
+development:
+  <<: *default
+
+test:
+  <<: *default
+
+production:
+  <<: *default
+
+staging:
+  <<: *default

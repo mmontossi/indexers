@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.email       = ['mmontossi@gmail.com']
   s.homepage    = 'https://github.com/mmontossi/indexers'
   s.summary     = 'Search indexers for rails.'
-  s.description = 'Model search indexers with elasticsearch in rails.'
+  s.description = 'Dsl to delegate searches to elasticsearch in rails.'
   s.license     = 'MIT'
 
   s.files = Dir['{app,config,db,lib}/**/*', 'MIT-LICENSE', 'Rakefile', 'README.md']

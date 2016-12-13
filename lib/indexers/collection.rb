@@ -84,7 +84,7 @@ module Indexers
       @query ||= begin
         pagination = options.slice(:from, :size, :sort)
         without_ids = fetch_ids(options[:without])
-        body = Dsl::Search.new(indexer, args, &indexer.options[:search]).to_h[:query]
+        body = Dsl::Search.new(indexer, args.append(options), &indexer.options[:search]).to_h[:query]
         request = Dsl::Search.new do
           if without_ids.any?
             query do

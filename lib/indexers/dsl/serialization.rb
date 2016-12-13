@@ -1,7 +1,6 @@
 module Indexers
   module Dsl
-    class Serialization < Api
-      include Traitable
+    class Serialization < Traitable
 
       def extract(record, *names)
         names.each do |name|

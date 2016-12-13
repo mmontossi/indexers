@@ -21,6 +21,13 @@ module Indexers
         Collection.new indexer, args, options
       end
 
+      def indexer
+        @indexer ||= begin
+
+
+        end
+      end
+
     end
   end
 end

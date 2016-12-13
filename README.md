@@ -5,7 +5,7 @@
 
 # Indexers
 
-Model search indexers with elasticsearch in rails.
+Dsl to delegate searches to elasticsearch in rails.
 
 ## Why
 
@@ -264,13 +264,11 @@ You can use a computed sort by declare it in the configuration:
 Indexers.configure do |config|
 
   config.computed_sort :price do |direction|
-    _script do
-      type 'number'
-      script do
-        inline "if (_source.currency == 'UYU') { doc['price'].value * 30 }"
-      end
-      order direction
+    type 'number'
+    script do
+      inline "if (_source.currency == 'UYU') { doc['price'].value * 30 }"
     end
+    order direction
   end
 
 end

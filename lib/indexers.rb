@@ -25,11 +25,7 @@ module Indexers
     def client
       @client ||= begin
         require 'elasticsearch'
-        Elasticsearch::Client.new(
-          hosts: configuration.hosts,
-          log: configuration.log,
-          trace: configuration.trace
-        )
+        Elasticsearch::Client.new YAML.load_file("#{Rails.root}/config/elasticsearch.yml")[Rails.env]
       end
     end
 

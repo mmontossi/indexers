@@ -14,6 +14,7 @@ class GeneratorTest < Rails::Generators::TestCase
     self.class.tests Indexers::Generators::InstallGenerator
     run_generator
     assert_file 'config/initializers/indexers.rb'
+    assert_file 'config/elasticsearch.yml'
   end
 
   test 'index' do

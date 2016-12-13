@@ -2,7 +2,7 @@ require 'rails/generators'
 
 module Indexers
   module Generators
-    class IndexerGenerator < ::Rails::Generators::NamedBase
+    class IndexerGenerator < Rails::Generators::NamedBase
 
       source_root File.expand_path('../templates', __FILE__)
 
@@ -13,7 +13,7 @@ module Indexers
       private
 
       def class_name_option
-        if class_name.include?('::')
+        if class_path.any?
           ", class_name: '#{class_name}'"
         end
       end
