@@ -8,7 +8,7 @@ module Indexers
 
           def inherited(subclass)
             super
-            if File.exist?("#{Rails.root}/app/indexers/#{subclass.name.underscore}_indexer.rb")
+            if subclass.name && File.exist?("#{Rails.root}/app/indexers/#{subclass.name.underscore}_indexer.rb")
               subclass.include Indexers::Concern
             end
           end
