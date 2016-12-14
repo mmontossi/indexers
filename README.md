@@ -203,8 +203,9 @@ product.unindex
 
 At any time you can build/rebuild your indexers using:
 ```
-$ bundle exec rake indexers:build
-$ bundle exec rake indexers:rebuild
+$ bundle exec rake indexers:index
+$ bundle exec rake indexers:reindex
+$ bundle exec rake indexers:unindex
 ```
 
 ### Search
