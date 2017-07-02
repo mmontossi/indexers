@@ -68,7 +68,7 @@ Indexers.configure do |config|
 end
 ```
 
-If you need to personalize the analysis, you can it here:
+If you need to personalize the analysis:
 
 ```ruby
 Indexers.configure do |config|
