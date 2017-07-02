@@ -32,12 +32,12 @@ Indexers.define :product do
             match_all
           end
         end
-        traits :filter
+        traits :shop
       end
     end
   end
 
-  trait :filter do
+  trait :shop do
     filter do
       if shop
         term do

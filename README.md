@@ -52,8 +52,7 @@ Indexers.configure do |config|
       type 'string'
       fields do
         raw do
-          type 'string'
-          index 'not_analyzed'
+          type 'keyword'
         end
       end
     end
@@ -115,7 +114,6 @@ Indexers.define :product do
     extract record, :name, :category, :price
     product_suggestions do
       input [record.name, transliterate(record.name)].uniq
-      output record.name
     end
   end
 
@@ -149,9 +147,8 @@ Indexers.define :product do
     shop = options[:shop]
     term = args.first
     query do
-      filtered do
-        traits :shop
-        query do
+      bool do
+        must do
           if term.present?
             multi_match do
               query term
@@ -162,19 +159,16 @@ Indexers.define :product do
             match_all
           end
         end
+        traits :shop
       end
     end
   end
 
   trait :shop do
     filter do
-      bool do
-        must do
-          if shop
-            term do
-              _parent shop.id
-            end
-          end
+      if shop
+        term do
+          _parent shop.id
         end
       end
     end
@@ -263,7 +257,7 @@ Indexers.configure do |config|
   config.computed_sort :price do |direction|
     type 'number'
     script do
-      inline "if (_source.currency == 'UYU') { doc['price'].value * 30 }"
+      inline "if (params['_source']['currency'] == 'UYU') { doc['price'].value * 30 }"
     end
     order direction
   end
