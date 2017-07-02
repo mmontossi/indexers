@@ -4,9 +4,7 @@ addons:
   apt:
     packages:
       - oracle-java8-installer
-install:
-  - sudo update-java-alternatives -s java-8-oracle
-  - export JAVA_HOME=/usr/lib/jvm/java-8-oracle/jre
+before_install:
   - curl -O https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.4.3.deb
   - sudo dpkg -i --force-confnew elasticsearch-5.4.3.deb
   - sudo service elasticsearch restart
