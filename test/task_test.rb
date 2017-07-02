@@ -3,11 +3,8 @@ require 'test_helper'
 class TaskTest < ActiveSupport::TestCase
 
   setup do
-    Dummy::Application.load_tasks
-  end
-
-  teardown do
     Indexers.unindex
+    Dummy::Application.load_tasks
   end
 
   test 'index' do

@@ -5,28 +5,24 @@ Indexers.configure do |config|
   config.trace = false
 
   config.mappings do
-    category type: 'string'
+    category type: 'text'
     shop_id type: 'long'
     price type: 'long'
-    currency type: 'string'
+    currency type: 'text'
     name do
-      type 'string'
+      type 'text'
       fields do
         raw do
-          type 'string'
-          index 'not_analyzed'
+          type 'keyword'
         end
       end
     end
     product_suggestions do
       type 'completion'
       analyzer 'simple'
-      context do
-        shop_id do
-          type 'category'
-          default 'all'
-        end
-      end
+      contexts [
+        { name: 'shop_id', type: 'category' }
+      ]
     end
   end
 
@@ -46,7 +42,7 @@ Indexers.configure do |config|
     shop = options[:shop]
     completion do
       field "#{type}_suggestions"
-      context do
+      contexts do
         if shop
           shop_id (shop.id.to_s || 'all')
         end
@@ -57,7 +53,7 @@ Indexers.configure do |config|
   config.computed_sort :price do |direction|
     type 'number'
     script do
-      inline "if (_source.currency == 'UYU') { doc['price'].value * 30 }"
+      inline "if (params['_source']['currency'] == 'UYU') { doc['price'].value * 30 }"
     end
     order direction
   end

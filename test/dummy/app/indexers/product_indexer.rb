@@ -9,8 +9,7 @@ Indexers.define :product do
     extract record, :name, :category, :shop_id, :price, :currency
     product_suggestions do
       input [record.name, transliterate(record.name)].uniq
-      output record.name
-      context do
+      contexts do
         shop_id [record.shop_id.to_s, 'all'].compact
       end
     end
@@ -21,9 +20,8 @@ Indexers.define :product do
     shop = options[:shop]
     term = args.first
     query do
-      filtered do
-        traits :filter
-        query do
+      bool do
+        must do
           if term.present?
             multi_match do
               query term
@@ -34,19 +32,16 @@ Indexers.define :product do
             match_all
           end
         end
+        traits :filter
       end
     end
   end
 
   trait :filter do
     filter do
-      bool do
-        must do
-          if shop
-            term do
-              _parent shop.id
-            end
-          end
+      if shop
+        term do
+          _parent shop.id
         end
       end
     end

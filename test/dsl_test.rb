@@ -17,52 +17,38 @@ class DslTest < ActiveSupport::TestCase
               {
                 weight: 400,
                 filter: {
-                  bool: {
-                    must: [
-                      { term: {} }
-                    ]
-                  }
+                  term: {}
                 }
               }
             ]
           },
           query: {
-            filtered: {
-              filter: {
-                bool: {
-                  should: [
-                    { term: { :'schedules.days' => days } }
-                  ],
-                  must: [
-                    { range: { :'schedules.opens_at' => { lte: opens_at } } }
-                  ],
-                  must_not: [
-                    {
-                      has_parent: {
-                        type: 'products',
-                        query: {
-                          filtered: {
-                            filter: {
-                              bool: {
-                                must: [
-                                  {
-                                    term: {
-                                      _parent: shop.id
-                                    }
-                                  }
-                                ]
-                              }
-                            },
-                            query: {
-                              match_all: {}
-                            }
+            bool: {
+              should: [
+                { term: { :'schedules.days' => days } }
+              ],
+              must: [
+                { range: { :'schedules.opens_at' => { lte: opens_at } } }
+              ],
+              must_not: [
+                {
+                  has_parent: {
+                    type: 'products',
+                    query: {
+                      bool: {
+                        must: [
+                          { match_all: {} }
+                        ],
+                        filter: {
+                          term: {
+                            _parent: shop.id
                           }
                         }
                       }
                     }
-                  ]
+                  }
                 }
-              }
+              ]
             }
           }
         },
@@ -79,32 +65,24 @@ class DslTest < ActiveSupport::TestCase
                 seed seed
               end
               filter weight: 400 do
-                bool do
-                  must do
-                    term
-                  end
-                end
+                term {}
               end
             end
           end
           query do
-            filtered do
-              filter do
-                bool do
-                  should do
-                    term 'schedules.days' => days
-                  end
-                  must do
-                    range 'schedules.opens_at' do
-                      lte opens_at
-                    end
-                  end
-                  must_not do
-                    has_parent do
-                      type 'products'
-                      query :product, shop: shop
-                    end
-                  end
+            bool do
+              should do
+                term 'schedules.days' => days
+              end
+              must do
+                range 'schedules.opens_at' do
+                  lte opens_at
+                end
+              end
+              must_not do
+                has_parent do
+                  type 'products'
+                  query :product, shop: shop
                 end
               end
             end

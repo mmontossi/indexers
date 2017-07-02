@@ -56,7 +56,7 @@ module Indexers
           values << { _script: Dsl::Api.new(direction, &block).to_h }
         elsif property == :id
           values << { _uid: { order: direction } }
-        elsif mappings.has_key?(property) && mappings[property][:type] == 'string'
+        elsif mappings.has_key?(property) && mappings[property][:type] == 'text'
           values << { "#{property}.raw" => { order: direction } }
         end
       end
@@ -84,19 +84,17 @@ module Indexers
         request = Dsl::Search.new do
           if without_ids.any?
             query do
-              filtered do
-                filter do
-                  bool do
-                    must_not do
-                      without_ids.each do |id|
-                        term do
-                          _id id
-                        end
-                      end
+              bool do
+                must do
+                  body
+                end
+                must_not do
+                  without_ids.each do |id|
+                    term do
+                      _id id
                     end
                   end
                 end
-                query body
               end
             end
           else
@@ -155,7 +153,7 @@ module Indexers
 
     def fetch_ids(source)
       case source
-      when Fixnum,String
+      when Integer,String
         [source.to_i]
       when ActiveRecord::Base
         [source.id]

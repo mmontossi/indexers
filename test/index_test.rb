@@ -3,11 +3,7 @@ require 'test_helper'
 class IndexTest < ActiveSupport::TestCase
 
   setup do
-    Indexers.index
-  end
-
-  teardown do
-    Indexers.unindex
+    Indexers.reindex
   end
 
   test 'namespace' do
@@ -22,7 +18,6 @@ class IndexTest < ActiveSupport::TestCase
     shop = Shop.create
     ['Les Paul', 'Stratocaster'].each do |name|
       product = shop.products.create(name: name)
-      product.run_callbacks :commit
     end
     sleep 2
 

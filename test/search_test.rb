@@ -3,16 +3,11 @@ require 'test_helper'
 class SearchTest < ActiveSupport::TestCase
 
   setup do
-    Indexers.index
-  end
-
-  teardown do
-    Indexers.unindex
+    Indexers.reindex
   end
 
   test 'order' do
     shop = Shop.create
-    shop.run_callbacks :commit
     (1..3).step do |id|
       product = shop.products.create(
         id: id,
@@ -21,7 +16,6 @@ class SearchTest < ActiveSupport::TestCase
         position: id,
         currency: 'UYU'
       )
-      product.run_callbacks :commit
       product
     end
     sleep 2
@@ -42,19 +36,17 @@ class SearchTest < ActiveSupport::TestCase
   test 'with and without' do
     (1..3).step do |id|
       shop = Shop.create(id: id)
-      shop.run_callbacks :commit
     end
     Shop.create id: 4
     sleep 2
 
     assert_equal [4, 3], Shop.search.page(1, length: 2, with: 4).map(&:id)
-    assert_equal [2, 1], Shop.search.page(1, without: 3).map(&:id)
+    assert_equal [4, 2, 1], Shop.search.page(1, without: 3).map(&:id)
   end
 
   test 'includes' do
     shop = Shop.create
     product = shop.products.create(name: 'Test')
-    product.run_callbacks :commit
     sleep 2
 
     product = Product.search.includes(:shop).first
@@ -65,7 +57,6 @@ class SearchTest < ActiveSupport::TestCase
   test 'pagination' do
     (1..5).step do |id|
       shop = Shop.create(id: id)
-      shop.run_callbacks :commit
     end
     sleep 2
 

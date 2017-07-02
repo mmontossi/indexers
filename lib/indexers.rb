@@ -19,7 +19,7 @@ module Indexers
   class << self
 
     def namespace
-      "#{Rails.application.class.parent_name} #{Rails.env}".parameterize('_')
+      "#{Rails.application.class.parent_name} #{Rails.env}".parameterize(separator: '_')
     end
 
     def client

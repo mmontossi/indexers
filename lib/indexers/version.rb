@@ -1,5 +1,5 @@
 module Indexers
 
-  VERSION = '4.1.0.1'
+  VERSION = '5.1.0'
 
 end

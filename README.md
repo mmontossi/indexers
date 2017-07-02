@@ -31,10 +31,10 @@ $ bundle
 
 To install Redis you can use homebrew:
 ```
-$ brew install elasticsearch24
+$ brew install elasticsearch
 ```
 
-NOTE: This gem is tested agains version 2.4.
+NOTE: This gem is tested agains version 5.4.
 
 ## Configuration
 
@@ -302,7 +302,7 @@ The result is an array of hashes with a text property:
 
 Any issue, pull request, comment of any kind is more than welcome!
 
-I will mainly ensure compatibility to PostgreSQL, AWS, Redis, Elasticsearch, FreeBSD and Memcached. 
+I will mainly ensure compatibility to Rails, AWS, PostgreSQL, Redis, Elasticsearch and FreeBSD. 
 
 ## Credits
 
