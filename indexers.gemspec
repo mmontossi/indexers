@@ -8,8 +8,8 @@ Gem::Specification.new do |s|
   s.name        = 'indexers'
   s.version     = Indexers::VERSION
   s.authors     = ['mmontossi']
-  s.email       = ['mmontossi@museways.com']
-  s.homepage    = 'https://github.com/mmontossi/indexers'
+  s.email       = ['hi@museways.com']
+  s.homepage    = 'https://github.com/museways/indexers'
   s.summary     = 'Search indexers for rails.'
   s.description = 'Dsl to delegate searches to elasticsearch in rails.'
   s.license     = 'MIT'

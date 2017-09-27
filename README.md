@@ -1,7 +1,7 @@
 [![Gem Version](https://badge.fury.io/rb/indexers.svg)](http://badge.fury.io/rb/indexers)
-[![Code Climate](https://codeclimate.com/github/mmontossi/indexers/badges/gpa.svg)](https://codeclimate.com/github/mmontossi/indexers)
-[![Build Status](https://travis-ci.org/mmontossi/indexers.svg)](https://travis-ci.org/mmontossi/indexers)
-[![Dependency Status](https://gemnasium.com/mmontossi/indexers.svg)](https://gemnasium.com/mmontossi/indexers)
+[![Code Climate](https://codeclimate.com/github/museways/indexers/badges/gpa.svg)](https://codeclimate.com/github/museways/indexers)
+[![Build Status](https://travis-ci.org/museways/indexers.svg)](https://travis-ci.org/museways/indexers)
+[![Dependency Status](https://gemnasium.com/museways/indexers.svg)](https://gemnasium.com/museways/indexers)
 
 # Indexers
 
@@ -223,7 +223,7 @@ Product.search.includes(:shop)
 
 ### Pagination
 
-Works the same as [pagers gem](https://github.com/mmontossi/pagers):
+Works the same as [pagers gem](https://github.com/museways/pagers):
 ```ruby
 Products.search.page(1, padding: 4, length: 30)
 ```
@@ -300,7 +300,7 @@ I will mainly ensure compatibility to Rails, AWS, PostgreSQL, Redis, Elasticsear
 
 ## Credits
 
-This gem is maintained and funded by [mmontossi](https://github.com/mmontossi).
+This gem is maintained and funded by [museways](https://github.com/museways).
 
 ## License
 
