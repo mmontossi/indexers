@@ -5,15 +5,16 @@ Indexers.configure do |config|
   config.trace = false
 
   config.mappings do
-    category type: 'text'
+    category type: 'string'
     shop_id type: 'long'
     price type: 'long'
-    currency type: 'text'
+    currency type: 'string'
     name do
-      type 'text'
+      type 'string'
       fields do
         raw do
-          type 'keyword'
+          type 'string'
+          index 'not_analyzed'
         end
       end
     end

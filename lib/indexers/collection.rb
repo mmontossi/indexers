@@ -56,7 +56,7 @@ module Indexers
           values << { _script: Dsl::Api.new(direction, &block).to_h }
         elsif property == :id
           values << { _uid: { order: direction } }
-        elsif mappings.has_key?(property) && mappings[property][:type] == 'text'
+        elsif mappings.has_key?(property) && mappings[property][:type] == 'string'
           values << { "#{property}.raw" => { order: direction } }
         end
       end

@@ -7,7 +7,7 @@ module Indexers
       if block_given?
         @mappings = Dsl::Api.new(&block).to_h
       else
-        @mappings
+        @mappings ||= {}
       end
     end
 
@@ -15,7 +15,7 @@ module Indexers
       if block_given?
         @analysis = { analysis: Dsl::Api.new(&block).to_h }
       else
-        @analysis
+        @analysis ||= {}
       end
     end
 
