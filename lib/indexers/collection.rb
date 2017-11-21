@@ -2,7 +2,7 @@ module Indexers
   class Collection
     include Enumerable
 
-    attr_reader :indexer, :args, :options
+    attr_reader :indexer, :scope, :args, :options
 
     delegate :model, to: :indexer
     delegate :model_name, to: :model
@@ -10,9 +10,10 @@ module Indexers
 
     alias_method :to_ary, :to_a
 
-    def initialize(indexer, args, options)
+    def initialize(indexer, scope, args, options)
       @loaded = false
       @indexer = indexer
+      @scope = scope
       @args = args
       @options = options
     end
@@ -40,11 +41,6 @@ module Indexers
         from: ((length * (current_page - 1)) + padding),
         size: length
       }
-      %i(with without).each do |name|
-        if options.has_key?(name)
-          overrides[name] = options[name]
-        end
-      end
       chain Pagination, values, overrides
     end
 
@@ -52,12 +48,15 @@ module Indexers
       mappings = Indexers.configuration.mappings
       values = []
       options.each do |property, direction|
+        order = { order: direction }
         if block = Indexers.computed_sorts.find(property)
           values << { _script: Dsl::Api.new(direction, &block).to_h }
         elsif property == :id
-          values << { _uid: { order: direction } }
-        elsif mappings.has_key?(property) && mappings[property][:type] == 'string'
-          values << { "#{property}.raw" => { order: direction } }
+          values << { _uid: order }
+        elsif mappings.has_key?(property) && (mappings[property][:type][:fields][:raw] rescue false)
+          values << { "#{property}.raw" => order }
+        else
+          values << { property => order }
         end
       end
       if values.any?
@@ -79,27 +78,9 @@ module Indexers
     def query
       @query ||= begin
         pagination = options.slice(:from, :size, :sort)
-        without_ids = fetch_ids(options[:without])
         body = Dsl::Search.new(indexer, args.append(options), &indexer.options[:search]).to_h[:query]
         request = Dsl::Search.new do
-          if without_ids.any?
-            query do
-              bool do
-                must do
-                  body
-                end
-                must_not do
-                  without_ids.each do |id|
-                    term do
-                      _id id
-                    end
-                  end
-                end
-              end
-            end
-          else
-            query body
-          end
+          query body
           %i(from size).each do |name|
             if pagination.has_key?(name)
               send name, pagination[name]
@@ -123,16 +104,9 @@ module Indexers
 
     def records
       @records ||= begin
-        hit_ids = response['hits']['hits'].map{ |hit| hit['_id'].to_i }
-        missing_ids = (fetch_ids(options[:with]) - hit_ids)
-        if missing_ids.any?
-          last_index = -(missing_ids.length + 1)
-          ids = (missing_ids.sort.reverse + hit_ids.to(last_index))
-        else
-          ids = hit_ids
-        end
+        ids = response['hits']['hits'].map{ |hit| hit['_id'].to_i }
         includes = options.fetch(:includes, [])
-        indexer.model.includes(includes).where(id: ids).sort do |a,b|
+        scope.includes(includes).where(id: ids).sort do |a,b|
           ids.index(a.id) <=> ids.index(b.id)
         end
       end
@@ -151,24 +125,9 @@ module Indexers
       end
     end
 
-    def fetch_ids(source)
-      case source
-      when Integer,String
-        [source.to_i]
-      when ActiveRecord::Base
-        [source.id]
-      when ActiveRecord::Relation
-        source.ids
-      when Array
-        source.map{ |value| fetch_ids(value) }.flatten
-      else
-        []
-      end
-    end
-
     def chain(*extensions)
       overrides = extensions.extract_options!
-      collection = Collection.new(indexer, args, options.merge(overrides))
+      collection = Collection.new(indexer, scope, args, options.merge(overrides))
       extensions.each do |extension|
         collection.extend extension
       end

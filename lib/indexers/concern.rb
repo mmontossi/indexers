@@ -18,11 +18,15 @@ module Indexers
 
       def search(*args)
         options = args.extract_options!
-        Collection.new indexer, args, options
+        if args.any? || options.any?
+          Collection.new indexer, all, args, options
+        else
+          all
+        end
       end
 
       def indexer
-        @indexer ||= Indexers.definitions.find(name.parameterize(separator: '_').to_sym)
+        Indexers.definitions.find name.parameterize(separator: '_').to_sym
       end
 
     end

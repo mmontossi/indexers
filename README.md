@@ -228,16 +228,6 @@ Works the same as [pagers gem](https://github.com/museways/pagers):
 Products.search.page(1, padding: 4, length: 30)
 ```
 
-You can force a record to be part of the results by id:
-```ruby
-Products.search.page(1, with: 4)
-```
-
-Or the opposite:
-```ruby
-Products.search.page(4, without: 4)
-```
-
 And you can send the collection directly to the view helper:
 ```erb
 <%= paginate products %>
