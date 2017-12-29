@@ -25,7 +25,8 @@ module Indexers
     def client
       @client ||= begin
         require 'elasticsearch'
-        Elasticsearch::Client.new YAML.load_file("#{Rails.root}/config/elasticsearch.yml")[Rails.env]
+        config = YAML.load_file("#{Rails.root}/config/elasticsearch.yml")[Rails.env]
+        Elasticsearch::Client.new config.deep_symbolize_keys
       end
     end
 

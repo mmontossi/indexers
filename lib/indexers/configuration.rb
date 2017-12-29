@@ -1,8 +1,6 @@
 module Indexers
   class Configuration
 
-    attr_accessor :hosts, :log, :trace
-
     def mappings(&block)
       if block_given?
         @mappings = Dsl::Api.new(&block).to_h

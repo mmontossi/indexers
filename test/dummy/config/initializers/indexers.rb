@@ -1,9 +1,5 @@
 Indexers.configure do |config|
 
-  config.hosts = %w(localhost:9200)
-  config.log = false
-  config.trace = false
-
   config.mappings do
     category type: 'string'
     shop_id type: 'long'
