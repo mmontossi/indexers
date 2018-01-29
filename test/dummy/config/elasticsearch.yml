@@ -2,14 +2,16 @@ default: &default
   hosts: localhost
   port: 9200
 
+debug: &debug
+  trace: true
+  log: true
+
 development:
   <<: *default
+  <<: *debug
 
 test:
   <<: *default
 
 production:
-  <<: *default
-
-staging:
   <<: *default

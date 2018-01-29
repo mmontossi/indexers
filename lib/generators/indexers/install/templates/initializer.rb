@@ -1,6 +1,7 @@
 Indexers.configure do |config|
 
-  config.mappings do
-  end
+  config.properties = {}
+
+  config.settings = {}
 
 end

@@ -1,17 +1,9 @@
-require 'indexers/dsl/api'
-require 'indexers/dsl/mappings'
-require 'indexers/dsl/traitable'
-require 'indexers/dsl/search'
-require 'indexers/dsl/serialization'
 require 'indexers/extensions/active_record/base'
+require 'indexers/base'
 require 'indexers/collection'
-require 'indexers/computed_sorts'
 require 'indexers/concern'
 require 'indexers/configuration'
-require 'indexers/definitions'
-require 'indexers/indexer'
 require 'indexers/pagination'
-require 'indexers/proxy'
 require 'indexers/railtie'
 require 'indexers/version'
 
@@ -19,7 +11,7 @@ module Indexers
   class << self
 
     def namespace
-      "#{Rails.application.class.parent_name} #{Rails.env}".parameterize(separator: '_')
+      "#{Rails.application.class.parent_name}_#{Rails.env}".downcase
     end
 
     def client
@@ -38,26 +30,19 @@ module Indexers
       @configuration ||= Configuration.new
     end
 
-    def computed_sorts
-      @computed_sorts ||= ComputedSorts.new
-    end
-
-    def definitions
-      @definitions ||= Definitions.new
-    end
-
-    def define(*args, &block)
-      Proxy.new *args, &block
-    end
-
     def index
-      unless client.indices.exists?(index: namespace)
-        client.indices.create(
-          index: namespace,
-          body: { settings: configuration.analysis }
-        )
+      client.indices.create(
+        index: namespace,
+        body: { settings: configuration.settings }
+      )
+      indexers = []
+      Dir["#{Rails.root}/app/indexers/**/*_indexer.rb"].each do |path|
+        indexer = path.split('/').last.remove('.rb').classify.constantize.new
+        if indexer.model
+          indexers << indexer
+        end
       end
-      definitions.each &:build
+      indexers.sort.each &:index
     end
 
     def reindex
@@ -66,17 +51,41 @@ module Indexers
     end
 
     def unindex
-      if client.indices.exists?(index: namespace)
-        client.indices.delete index: namespace
+      client.indices.delete index: namespace
+    end
+
+    def flush
+      attempts = 3
+      begin
+        client.delete_by_query index: namespace
+      rescue Elasticsearch::Transport::Transport::Errors::Conflict => exception
+        # https://github.com/elastic/elasticsearch-rails/issues/598
+        attempts -= 1
+        raise exception if attempts.zero?
+        sleep 1
+        flush
       end
     end
 
-    def suggest(*args)
-      response = client.suggest(
-        index: namespace,
-        body: { suggestions: Dsl::Api.new(args, &configuration.suggestions).to_h }
-      )
-      response['suggestions'].first['options'].map &:symbolize_keys
+    def suggest(name, *args)
+      suggestion = configuration.suggestions[name].call(*args)
+      query = { suggest: { all: suggestion } }
+      response = client.search(index: namespace, body: query)
+      options = response['suggest']['all'].first['options'].map do |option|
+        id = option['_id'].to_i
+        type = option['_type'].classify.remove('Indexer')
+        [option['text'], id, type]
+      end
+      matches = []
+      options.group_by(&:third).each do |type, group|
+        ids = group.map(&:second)
+        model = type.constantize
+        records = model.where(id: ids).to_a.group_by(&:id)
+        group.each do |text, id|
+          matches << [text, records[id].first]
+        end
+      end
+      matches
     end
 
   end

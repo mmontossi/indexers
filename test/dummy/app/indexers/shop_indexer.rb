@@ -1,28 +1,26 @@
-Indexers.define :shop do
+class ShopIndexer < ApplicationIndexer
 
-  mappings do
-    properties :name
+  def mappings
+    { properties: configuration.properties.slice(:name) }
   end
 
-  serialize do |record|
-    name record.name
+  def serialize(record)
+    record.slice :name
   end
 
-  search do |*args|
-    options = args.extract_options!
-    term = args.first
-    query do
-      if term.present?
-        match do
-          name do
-            query term
-            type 'phrase_prefix'
-          end
-        end
-      else
-        match_all
-      end
+  def query(term, options={})
+    query = {}
+    if term.present?
+      query[:match] = {
+        name: {
+          query: term,
+          type: 'phrase_prefix'
+        }
+      }
+    else
+      query[:match_all] = {}
     end
+    { query: query }
   end
 
 end

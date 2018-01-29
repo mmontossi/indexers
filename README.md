@@ -9,7 +9,7 @@ Dsl to delegate searches to elasticsearch in rails.
 
 ## Why
 
-I did this gem to:
+We did this gem to:
 
 - Gain control of the queries without losing simplicity.
 - Have out of the box integration with activerecord and pagers.
@@ -47,47 +47,59 @@ Set the global settings:
 ```ruby
 Indexers.configure do |config|
 
-  config.mappings do
-    name do
-      type 'string'
-      fields do
-        raw do
-          type 'keyword'
-        end
-      end
+  config.properties = {
+    category: { type: 'string' },
+    shop_id: { type: 'long' },
+    price: { type: 'long' },
+    position: { type: 'long' },
+    currency: { type: 'string' },
+    name: {
+      type: 'string',
+      fields: {
+        raw: {
+          type: 'string',
+          index: 'not_analyzed'
+        }
+      }
+    },
+    product_suggestion: {
+      type: 'completion',
+      analyzer: 'simple',
+      contexts: {
+        name: 'shop_id',
+        type: 'category'
+      }
+    }
+  }
+
+  config.settings = {
+    analysis: {
+      filter: {
+        ngram: {
+          type: 'nGram',
+          min_gram: 2,
+          max_gram: 20
+        }
+      }
+    }
+  }
+
+  config.suggestion :product do |term, options={}|
+    prefix = (term || '')
+    contexts = {}
+    if shop = options[:shop]
+      contexts[:shop_id] = (shop.id.to_s || 'all')
     end
-    category type: 'string'
-    price type: 'long'
-    currency type: 'string'
-    product_suggestions do
-      type 'completion'
-      analyzer 'simple'
-    end
+    { prefix: prefix, completion: { field: 'product_suggestion', contexts: contexts } }
   end
 
-end
-```
-
-If you need to personalize the analysis:
-
-```ruby
-Indexers.configure do |config|
-
-  config.analysis do
-    filter do
-      ngram do
-        type 'nGram'
-        min_gram 2
-        max_gram 20
-      end
-    end
-    analyzer do
-      ngram do
-        type 'custom'
-        tokenizer 'standard'
-        filter %w(lowercase ngram)
-      end
-    end
+  config.computed_sort :price do |direction|
+    inline = <<~CODE
+      if (params['_source']['currency'] == 'UYU') {
+        doc['price'].value * 30
+      }
+    CODE
+    { type: 'number', script: { inline: inline }, order: direction }
   end
 
 end
@@ -99,85 +111,60 @@ NOTE: You may want to personalize the generated config/elasticsearch.yml.
 
 Generate an index:
 ```
-$ bundle exec rails g indexers:indexer products
+$ bundle exec rails g indexers:indexer product
 ```
 
 Define the mappings, serialization and search in the index:
 ```ruby
-Indexers.define :product do
+class ProductIndexer < ApplicationIndexer
 
-  mappings do
-    properties :name, :category, :price, :product_suggestions
+  def mappings
+    properties = configuration.properties.slice(
+      :name, :category, :shop_id, :price, :currency, :product_suggestion
+    )
+    { properties: properties, _parent: { type: 'shop' } }
   end
 
-  serialize do |record|
-    extract record, :name, :category, :price
-    product_suggestions do
-      input [record.name, transliterate(record.name)].uniq
-    end
+  def serialize(record)
+    record.slice(
+      :name, :category, :shop_id, :price, :position, :currency
+    ).merge(
+      product_suggestion: {
+        input: record.name,
+        contexts: {
+          shop_id: [record.shop_id.to_s, 'all'].compact
+        }
+      }
+    )
   end
 
-  search do |*args|
-    options = args.extract_options!
-    term = args.first
-    query do
-      if term.present?
-        multi_match do
-          query term
-          type 'phrase_prefix'
-          fields %w(name category)
-        end
-      else
-        match_all
-      end
+  def query(term, options={})
+    must = {}
+    if term.present?
+      must[:multi_match] = {
+        query: term,
+        type: 'phrase_prefix',
+        fields: %w(name category)
+      }
+    else
+      must[:match_all] = {}
     end
+    filter = {}
+    if shop = options[:shop]
+      filter[:term] = {
+        _parent: shop.id
+      }
+    end
+    { query: {
+      bool: {
+        must: must,
+        filter: filter
+      }
+    } }
   end
 
 end
 ```
-
-### Traits
-
-You can dry complex searches or serializations using traits:
-```ruby
-Indexers.define :product do
-
-  search do |*args|
-    options = args.extract_options!
-    shop = options[:shop]
-    term = args.first
-    query do
-      bool do
-        must do
-          if term.present?
-            multi_match do
-              query term
-              type 'phrase_prefix'
-              fields %w(name category)
-            end
-          else
-            match_all
-          end
-        end
-        traits :shop
-      end
-    end
-  end
-
-  trait :shop do
-    filter do
-      if shop
-        term do
-          _parent shop.id
-        end
-      end
-    end
-  end
-
-end
-```
-
-NOTE: The binding is persisted, there is no need to redefine variables.
 
 ### Indexing
 
@@ -240,53 +227,25 @@ Same as using activerecord:
 Product.search.order(name: :asc)
 ```
 
-You can use a computed sort by declare it in the configuration:
-```ruby
-Indexers.configure do |config|
-
-  config.computed_sort :price do |direction|
-    type 'number'
-    script do
-      inline "if (params['_source']['currency'] == 'UYU') { doc['price'].value * 30 }"
-    end
-    order direction
-  end
-
-end
-```
+NOTE: You can use a computed sort declared it in the configuration.
 
 ### Suggestions
 
-You need to first define the logic in the configuration:
-```ruby
-Indexers.configure do |config|
-
-  config.suggestions do |name, term, options={}|
-    type = name.to_s.singularize
-    text (term || '')
-    completion do
-      field "#{type}_suggestions"
-    end
-  end
-
-end
-```
-
-Then you can get suggestions using the suggest method:
+You can get suggestions using the previous configured block:
 ```ruby
 Indexers.suggest :product, 'gibson'
 ```
 
-The result is an array of hashes with a text property:
+The result is an array of hashes with a text property and the record:
 ```ruby
-[{ text: 'Les Paul' }, ...]
+[{ text: 'Les Paul', <ActiveRecord::Base ...> }, ...]
 ```
 
 ## Contributing
 
 Any issue, pull request, comment of any kind is more than welcome!
 
-I will mainly ensure compatibility to Rails, AWS, PostgreSQL, Redis, Elasticsearch and FreeBSD. 
+We will mainly ensure compatibility to Rails, AWS, PostgreSQL, Redis, Elasticsearch and FreeBSD. 
 
 ## Credits
 

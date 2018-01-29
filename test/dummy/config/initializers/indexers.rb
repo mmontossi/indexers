@@ -1,58 +1,58 @@
 Indexers.configure do |config|
 
-  config.mappings do
-    category type: 'string'
-    shop_id type: 'long'
-    price type: 'long'
-    currency type: 'string'
-    name do
-      type 'string'
-      fields do
-        raw do
-          type 'string'
-          index 'not_analyzed'
-        end
-      end
-    end
-    product_suggestions do
-      type 'completion'
-      analyzer 'simple'
-      contexts [
-        { name: 'shop_id', type: 'category' }
-      ]
-    end
-  end
+  config.properties = {
+    category: { type: 'string' },
+    shop_id: { type: 'long' },
+    price: { type: 'long' },
+    position: { type: 'long' },
+    currency: { type: 'string' },
+    name: {
+      type: 'string',
+      fields: {
+        raw: {
+          type: 'string',
+          index: 'not_analyzed'
+        }
+      }
+    },
+    product_suggestion: {
+      type: 'completion',
+      analyzer: 'simple',
+      contexts: {
+        name: 'shop_id',
+        type: 'category'
+      }
+    }
+  }
 
-  config.analysis do
-    filter do
-      ngram do
-        type 'nGram'
-        min_gram 2
-        max_gram 20
-      end
-    end
-  end
+  config.settings = {
+    analysis: {
+      filter: {
+        ngram: {
+          type: 'nGram',
+          min_gram: 2,
+          max_gram: 20
+        }
+      }
+    }
+  }
 
-  config.suggestions do |name, term, options={}|
-    type = name.to_s.singularize
-    text (term || '')
-    shop = options[:shop]
-    completion do
-      field "#{type}_suggestions"
-      contexts do
-        if shop
-          shop_id (shop.id.to_s || 'all')
-        end
-      end
+  config.suggestion :product do |term, options={}|
+    prefix = (term || '')
+    contexts = {}
+    if shop = options[:shop]
+      contexts[:shop_id] = (shop.id.to_s || 'all')
     end
+    { prefix: prefix, completion: { field: 'product_suggestion', contexts: contexts } }
   end
 
   config.computed_sort :price do |direction|
-    type 'number'
-    script do
-      inline "if (params['_source']['currency'] == 'UYU') { doc['price'].value * 30 }"
-    end
-    order direction
+    inline = <<~CODE
+      if (params['_source']['currency'] == 'UYU') {
+        doc['price'].value * 30
+      }
+    CODE
+    { type: 'number', script: { inline: inline }, order: direction }
   end
 
 end

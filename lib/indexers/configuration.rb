@@ -1,32 +1,20 @@
 module Indexers
   class Configuration
 
-    def mappings(&block)
-      if block_given?
-        @mappings = Dsl::Api.new(&block).to_h
-      else
-        @mappings ||= {}
+    attr_writer :properties, :settings
+
+    %w(properties settings suggestions computed_sorts).each do |name|
+      define_method name do
+        variable = "@#{name}"
+        instance_variable_get(variable) ||
+        instance_variable_set(variable, {})
       end
     end
 
-    def analysis(&block)
-      if block_given?
-        @analysis = { analysis: Dsl::Api.new(&block).to_h }
-      else
-        @analysis ||= {}
+    %w(suggestions computed_sorts).each do |name|
+      define_method name.singularize do |key, &block|
+        send(name)[key] = block
       end
-    end
-
-    def suggestions(&block)
-      if block_given?
-        @suggestions = block
-      else
-        @suggestions
-      end
-    end
-
-    def computed_sort(*args, &block)
-      Indexers.computed_sorts.add *args, &block
     end
 
   end

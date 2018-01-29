@@ -3,25 +3,14 @@ require 'test_helper'
 class TaskTest < ActiveSupport::TestCase
 
   setup do
-    Indexers.unindex
     Dummy::Application.load_tasks
   end
 
-  test 'index' do
-    assert_nothing_raised do
-      Rake::Task['indexers:index'].invoke
-    end
-  end
-
-  test 'reindex' do
-    assert_nothing_raised do
-      Rake::Task['indexers:reindex'].invoke
-    end
-  end
-
-  test 'unindex' do
+  test 'all' do
     assert_nothing_raised do
       Rake::Task['indexers:unindex'].invoke
+      Rake::Task['indexers:index'].invoke
+      Rake::Task['indexers:reindex'].invoke
     end
   end
 

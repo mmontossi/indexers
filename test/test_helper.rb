@@ -11,3 +11,15 @@ require 'mocha/mini_test'
 Minitest.backtrace_filter = Minitest::BacktraceFilter.new
 
 Rails::TestUnitReporter.executable = 'bin/test'
+
+class ActiveSupport::TestCase
+
+  teardown do
+    Indexers.flush
+  end
+
+  def wait
+    sleep 2
+  end
+
+end

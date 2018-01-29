@@ -7,10 +7,11 @@ module Indexers
         module ClassMethods
 
           def inherited(subclass)
-            super
-            if subclass.name && File.exist?("#{Rails.root}/app/indexers/#{subclass.name.underscore}_indexer.rb")
+            filename = subclass.name.try(:underscore)
+            if filename && File.exist?("#{Rails.root}/app/indexers/#{filename}_indexer.rb")
               subclass.include Indexers::Concern
             end
+            super
           end
 
         end

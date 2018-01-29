@@ -19,8 +19,8 @@ class GeneratorTest < Rails::Generators::TestCase
 
   test 'index' do
     self.class.tests Indexers::Generators::IndexerGenerator
-    run_generator %w(products)
-    assert_file 'app/indexers/products_indexer.rb'
+    run_generator %w(economy/exchange)
+    assert_file 'app/indexers/economy/exchange_indexer.rb'
   end
 
 end

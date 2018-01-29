@@ -6,12 +6,9 @@ module Indexers
 
     delegate :model, to: :indexer
     delegate :model_name, to: :model
-    delegate :each, :map, :size, :length, :count, :[], :to_a, to: :records
-
-    alias_method :to_ary, :to_a
+    delegate :each, :size, :length, :to_ary, to: :records
 
     def initialize(indexer, scope, args, options)
-      @loaded = false
       @indexer = indexer
       @scope = scope
       @args = args
@@ -22,10 +19,31 @@ module Indexers
       chain includes: args
     end
 
+    def order(hash)
+      sort = []
+      hash.each do |property, direction|
+        order = { order: direction }
+        if property == :id
+          sort << { _uid: order }
+        elsif block = configuration.computed_sorts[property]
+          sort << { _script: block.call(direction) }
+        elsif !(configuration.properties[property][:fields][:raw] rescue nil).nil?
+          sort << { "#{property}.raw" => order }
+        else
+          sort << { property => order }
+        end
+      end
+      if sort.any?
+        chain sort: sort
+      else
+        chain
+      end
+    end
+
     def page(number, options={})
       length = page_option(options, :length, 10)
       padding = page_option(options, :padding, 0)
-      current_page = [number.to_i, 1].max
+      current_page = [number, 1].max
       values = Module.new do
         define_method :page_length do
           length
@@ -44,79 +62,37 @@ module Indexers
       chain Pagination, values, overrides
     end
 
-    def order(options)
-      mappings = Indexers.configuration.mappings
-      values = []
-      options.each do |property, direction|
-        order = { order: direction }
-        if block = Indexers.computed_sorts.find(property)
-          values << { _script: Dsl::Api.new(direction, &block).to_h }
-        elsif property == :id
-          values << { _uid: order }
-        elsif mappings.has_key?(property) && (mappings[property][:type][:fields][:raw] rescue false)
-          values << { "#{property}.raw" => order }
-        else
-          values << { property => order }
-        end
-      end
-      if values.any?
-        chain sort: values
-      else
-        chain
-      end
-    end
-
-    def response
-      if @loaded == true
-        @response
-      else
-        @loaded = true
-        @response = indexer.search(query)
-      end
-    end
-
-    def query
-      @query ||= begin
-        pagination = options.slice(:from, :size, :sort)
-        body = Dsl::Search.new(indexer, args.append(options), &indexer.options[:search]).to_h[:query]
-        request = Dsl::Search.new do
-          query body
-          %i(from size).each do |name|
-            if pagination.has_key?(name)
-              send name, pagination[name]
-            end
-          end
-          if pagination.has_key?(:sort)
-            sort pagination[:sort]
-          else
-            sort do
-              _uid do
-                order 'desc'
-              end
-            end
-          end
-        end
-        request.to_h
-      end
-    end
-
     private
+
+    delegate :configuration, to: Indexers
 
     def records
       @records ||= begin
-        ids = response['hits']['hits'].map{ |hit| hit['_id'].to_i }
-        includes = options.fetch(:includes, [])
-        scope.includes(includes).where(id: ids).sort do |a,b|
+        ids = response['hits']['hits'].map do |hit|
+          hit['_id'].to_i
+        end
+        includes = internals.fetch(:includes, [])
+        scope.includes(includes).where(id: ids).sort do |a, b|
           ids.index(a.id) <=> ids.index(b.id)
         end
       end
     end
 
-    def page_option(source, name, default)
-      source[name] || begin
-        if Rails.configuration.cache_classes == false
-          Rails.application.eager_load!
-        end
+    def response
+      @response ||= begin
+        hash = indexer.query(*args.append(options))
+        hash.merge! internals.slice(:from, :size)
+        hash[:sort] = internals.fetch(:sort, _uid: { order: 'desc' })
+        indexer.search(hash)
+      end
+    end
+
+    def internals
+      @internals ||= options.extract!(:from, :size, :sort, :includes)
+    end
+
+    def page_option(options, name, default)
+      options[name] || begin
         if defined?(Pagers)
           Pagers.configuration.send name
         else
@@ -127,7 +103,12 @@ module Indexers
 
     def chain(*extensions)
       overrides = extensions.extract_options!
-      collection = Collection.new(indexer, scope, args, options.merge(overrides))
+      collection = Collection.new(
+        indexer,
+        scope,
+        args,
+        options.merge(overrides)
+      )
       extensions.each do |extension|
         collection.extend extension
       end

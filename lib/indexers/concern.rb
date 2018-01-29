@@ -26,7 +26,7 @@ module Indexers
       end
 
       def indexer
-        Indexers.definitions.find name.parameterize(separator: '_').to_sym
+        "#{name}Indexer".constantize.new
       end
 
     end

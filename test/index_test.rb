@@ -2,16 +2,8 @@ require 'test_helper'
 
 class IndexTest < ActiveSupport::TestCase
 
-  setup do
-    Indexers.reindex
-  end
-
   test 'namespace' do
     assert_equal 'dummy_test', Indexers.namespace
-  end
-
-  test 'find' do
-    assert Indexers.definitions.find(:product)
   end
 
   test 'suggest' do
@@ -19,7 +11,7 @@ class IndexTest < ActiveSupport::TestCase
     ['Les Paul', 'Stratocaster'].each do |name|
       product = shop.products.create(name: name)
     end
-    sleep 2
+    wait
 
     assert_equal [], suggest('', shop)
     assert_equal ['Les Paul'], suggest('les', shop)
@@ -29,9 +21,7 @@ class IndexTest < ActiveSupport::TestCase
   private
 
   def suggest(term, shop)
-    Indexers.suggest(:product, term, shop: shop).map do |suggestion|
-      suggestion[:text]
-    end
+    Indexers.suggest(:product, term, shop: shop).map(&:first)
   end
 
 end

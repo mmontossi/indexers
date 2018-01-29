@@ -1,12 +1,12 @@
-Indexers.define :<%= singular_table_name %><%= class_name_option %> do
+class <%= class_name %>Indexer < Indexers::Base
 
-  mappings do
+  def mappings
   end
 
-  serialize do |record|
+  def serialize(record)
   end
 
-  search do |*args|
+  def query(term, options={})
   end
 
 end
