@@ -13,6 +13,7 @@ before_install:
   - rm Gemfile.lock
   - mv Gemfile.travis Gemfile
   - gem update --system
+  - cd test/dummy && bin/rails indexers:index
 script:
   - cd test/dummy && bin/rails db:create db:migrate
   - cd ../.. && bin/test
