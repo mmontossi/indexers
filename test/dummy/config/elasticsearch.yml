@@ -8,7 +8,6 @@ debug: &debug
 
 development:
   <<: *default
-  <<: *debug
 
 test:
   <<: *default
