@@ -9,12 +9,12 @@ before_install:
   - export JAVA_HOME=/usr/lib/jvm/java-8-oracle/jre
   - curl -O https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.6.5.deb
   - sudo dpkg -i --force-confnew elasticsearch-5.6.5.deb
-  - sudo service elasticsearch restart
+  - sudo service elasticsearch start
   - rm Gemfile.lock
   - mv Gemfile.travis Gemfile
   - gem update --system
 script:
-  - cd test/dummy && bin/rails db:create db:migrate && cd bin/rails indexers:index
+  - cd test/dummy && bin/rails db:create db:migrate && bin/rails indexers:index
   - cd ../.. && bin/test
 env:
   - RAILS=5.1
