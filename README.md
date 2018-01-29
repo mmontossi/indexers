@@ -34,7 +34,7 @@ To install Redis you can use homebrew:
 $ brew install elasticsearch
 ```
 
-NOTE: This gem is tested agains version 5.4.
+NOTE: This gem is tested agains version 5.6.
 
 ## Configuration
 
