@@ -30,6 +30,10 @@ module Indexers
       @configuration ||= Configuration.new
     end
 
+    def exists?
+      client.indices.exists? index: namespace
+    end
+
     def index
       client.indices.create(
         index: namespace,

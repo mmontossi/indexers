@@ -23,14 +23,6 @@ module Indexers
       end
     end
 
-    def any?(*args)
-      search(*args).count > 0
-    end
-
-    def none?(*args)
-      !any?(*args)
-    end
-
     def search(query)
       client.search(
         index: namespace,

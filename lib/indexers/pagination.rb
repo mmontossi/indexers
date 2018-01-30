@@ -26,7 +26,7 @@ module Indexers
     end
 
     def total_count
-      @total_count ||= (response['hits']['total'].to_i - padding)
+      @total_count ||= [(response['hits']['total'].to_i - padding), 0].max
     end
 
   end

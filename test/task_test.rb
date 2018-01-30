@@ -7,11 +7,14 @@ class TaskTest < ActiveSupport::TestCase
   end
 
   test 'all' do
-    assert_nothing_raised do
-      Rake::Task['indexers:unindex'].invoke
-      Rake::Task['indexers:index'].invoke
-      Rake::Task['indexers:reindex'].invoke
-    end
+    Indexers.expects(:unindex).once
+    Rake::Task['indexers:unindex'].invoke
+
+    Indexers.expects(:index).once
+    Rake::Task['indexers:index'].invoke
+
+    Indexers.expects(:reindex).once
+    Rake::Task['indexers:reindex'].invoke
   end
 
 end

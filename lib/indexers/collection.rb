@@ -43,7 +43,7 @@ module Indexers
     def page(number, options={})
       length = page_option(options, :length, 10)
       padding = page_option(options, :padding, 0)
-      current_page = [number, 1].max
+      current_page = [number.to_i, 1].max
       values = Module.new do
         define_method :page_length do
           length
@@ -80,10 +80,10 @@ module Indexers
 
     def response
       @response ||= begin
-        hash = indexer.query(*args.append(options))
-        hash.merge! internals.slice(:from, :size)
-        hash[:sort] = internals.fetch(:sort, _uid: { order: 'desc' })
-        indexer.search(hash)
+        query = { query: indexer.query(*args.append(options)) }
+        query.merge! internals.slice(:from, :size)
+        query[:sort] = internals.fetch(:sort, _uid: { order: 'desc' })
+        indexer.search(query)
       end
     end
 

@@ -30,8 +30,8 @@ Indexers.configure do |config|
       filter: {
         ngram: {
           type: 'nGram',
-          min_gram: 2,
-          max_gram: 20
+          min_gram: '2',
+          max_gram: '20'
         }
       }
     }
@@ -52,7 +52,7 @@ Indexers.configure do |config|
         doc['price'].value * 30
       }
     CODE
-    { type: 'number', script: { inline: inline }, order: direction }
+    { type: 'number', script: { source: inline }, order: direction }
   end
 
 end

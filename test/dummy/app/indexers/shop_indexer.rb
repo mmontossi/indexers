@@ -20,7 +20,7 @@ class ShopIndexer < ApplicationIndexer
     else
       query[:match_all] = {}
     end
-    { query: query }
+    query
   end
 
 end

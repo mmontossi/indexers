@@ -16,6 +16,7 @@ class ActiveSupport::TestCase
 
   teardown do
     Indexers.flush
+    wait
   end
 
   def wait

@@ -77,8 +77,8 @@ Indexers.configure do |config|
       filter: {
         ngram: {
           type: 'nGram',
-          min_gram: 2,
-          max_gram: 20
+          min_gram: '2',
+          max_gram: '20'
         }
       }
     }
@@ -99,7 +99,7 @@ Indexers.configure do |config|
         doc['price'].value * 30
       }
     CODE
-    { type: 'number', script: { inline: inline }, order: direction }
+    { type: 'number', script: { source: inline }, order: direction }
   end
 
 end
@@ -139,28 +139,25 @@ class ProductIndexer < ApplicationIndexer
   end
 
   def query(term, options={})
-    must = {}
+    bool = {}
+    query = { bool: bool }
     if term.present?
-      must[:multi_match] = {
-        query: term,
-        type: 'phrase_prefix',
-        fields: %w(name category)
+      bool[:must] = {
+        multi_match: {
+          query: term,
+          type: 'phrase_prefix',
+          fields: %w(name category)
+        }
       }
     else
-      must[:match_all] = {}
+      bool[:must] = { match_all: {} }
     end
-    filter = {}
     if shop = options[:shop]
-      filter[:term] = {
-        _parent: shop.id
+      bool[:filters] = {
+        term: { _parent: shop.id }
       }
     end
-    { query: {
-      bool: {
-        must: must,
-        filter: filter
-      }
-    } }
+    query
   end
 
 end

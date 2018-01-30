@@ -21,28 +21,25 @@ class ProductIndexer < ApplicationIndexer
   end
 
   def query(term, options={})
-    must = {}
+    bool = {}
+    query = { bool: bool }
     if term.present?
-      must[:multi_match] = {
-        query: term,
-        type: 'phrase_prefix',
-        fields: %w(name category)
+      bool[:must] = {
+        multi_match: {
+          query: term,
+          type: 'phrase_prefix',
+          fields: %w(name category)
+        }
       }
     else
-      must[:match_all] = {}
+      bool[:must] = { match_all: {} }
     end
-    filter = {}
     if shop = options[:shop]
-      filter[:term] = {
-        _parent: shop.id
+      bool[:filters] = {
+        term: { _parent: shop.id }
       }
     end
-    { query: {
-      bool: {
-        must: must,
-        filter: filter
-      }
-    } }
+    query
   end
 
 end
