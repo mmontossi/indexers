@@ -34,19 +34,24 @@ module Indexers
       client.indices.exists? index: namespace
     end
 
+    def all
+      base = "#{Rails.root}/app/indexers"
+      indexers = []
+      Dir["#{base}/**/*_indexer.rb"].map do |path|
+        indexer = path.remove(base, '.rb').camelize.constantize.new
+        if indexer.model
+          indexers << indexer
+        end
+      end
+      indexers.sort
+    end
+
     def index
       client.indices.create(
         index: namespace,
         body: { settings: configuration.settings }
       )
-      indexers = []
-      Dir["#{Rails.root}/app/indexers/**/*_indexer.rb"].each do |path|
-        indexer = path.split('/').last.remove('.rb').classify.constantize.new
-        if indexer.model
-          indexers << indexer
-        end
-      end
-      indexers.sort.each &:index
+      all.each &:index
     end
 
     def reindex

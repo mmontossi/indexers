@@ -31,16 +31,6 @@ module Indexers
       )
     end
 
-    def exists?(record)
-      client.exists?(
-        normalize(
-          record,
-          index: namespace,
-          type: name
-        )
-      )
-    end
-
     def index(record=nil)
       if record
         client.create(

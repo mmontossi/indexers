@@ -77,8 +77,8 @@ Indexers.configure do |config|
       filter: {
         ngram: {
           type: 'nGram',
-          min_gram: '2',
-          max_gram: '20'
+          min_gram: 2,
+          max_gram: 20
         }
       }
     }
